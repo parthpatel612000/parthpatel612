@@ -701,8 +701,9 @@ body {
     }
 
     .nav-link {
-        padding: 0.75rem;
+        padding: 1rem;
         border-bottom: none;
+        font-size: 1.125rem;
     }
 
     .hero-title {
