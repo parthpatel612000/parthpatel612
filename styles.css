@@ -712,7 +712,19 @@ body {
     height: 100%;
     border: none;
 }
+/* Custom Video Player Styles */
+.video-container-custom {
+    width: 100%;
+    background-color: var(--black);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
 
+.video-container-custom video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
 /* Responsive Design */
 @media (max-width: 768px) {
     .mobile-menu-btn {
