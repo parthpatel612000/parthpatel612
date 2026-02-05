@@ -725,6 +725,110 @@ body {
     height: auto;
     display: block;
 }
+
+
+.slideshow-container {
+    position: relative;
+    max-width: 800px;
+    margin: 50px auto;
+    background-color: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Slide styles */
+.slide {
+    display: none;
+    position: relative;
+    width: 100%;
+}
+
+.slide img {
+    width: 100%;
+    height: 600px;
+    object-fit: cover;
+    display: block;
+}
+
+/* Caption styling */
+.caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+    color: white;
+    padding: 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* Fade animation */
+.fade {
+    animation: fade 1s ease-in-out;
+}
+
+@keyframes fade {
+    from { opacity: 0.4; }
+    to { opacity: 1; }
+}
+
+/* Navigation buttons */
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    margin-top: -22px;
+    padding: 16px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 3px;
+    user-select: none;
+    transition: background-color 0.3s ease;
+    z-index: 10;
+}
+
+.next { right: 0; }
+.prev { left: 0; }
+
+.prev:hover, .next:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Dots container */
+.dots-container {
+    text-align: center;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+/* Dot styling */
+.dot {
+    cursor: pointer;
+    height: 12px;
+    width: 12px;
+    margin: 0 5px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+
+.active, .dot:hover {
+    background-color: #717171;
+}
+
+@media screen and (max-width: 600px) {
+    .slideshow-container { margin: 20px auto; }
+    .slide img { height: 400px; }
+    .caption { font-size: 16px; padding: 15px; }
+    .prev, .next { padding: 12px; font-size: 16px; }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .mobile-menu-btn {
