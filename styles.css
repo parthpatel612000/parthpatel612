@@ -61,9 +61,12 @@ body {
     border-bottom: 2px solid transparent;
 }
 
-.nav-link:hover,
-.nav-link.active {
+.nav-link:hover {
     color: var(--gt-gold);
+}
+
+.nav-link.active {
+    color: var(--white);
     border-bottom-color: var(--gt-gold);
 }
 
