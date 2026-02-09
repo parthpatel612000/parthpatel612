@@ -61,12 +61,9 @@ body {
     border-bottom: 2px solid transparent;
 }
 
-.nav-link:hover {
-    color: var(--gt-gold);
-}
-
+.nav-link:hover,
 .nav-link.active {
-    color: var(--white);
+    color: var(--gt-gold);
     border-bottom-color: var(--gt-gold);
 }
 
@@ -855,8 +852,14 @@ body {
 
     .nav-link {
         padding: 1rem;
-        border-bottom: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         font-size: 1.125rem;
+    }
+
+    .nav-link.active {
+        color: var(--white);
+        border-bottom: 1px solid var(--gt-gold);
+        background-color: rgba(179, 163, 105, 0.1);
     }
 
     .hero-title {
