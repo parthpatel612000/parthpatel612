@@ -1,3 +1,4 @@
+
 /* Georgia Tech Color Palette */
 :root {
     --gt-navy: #003057;
@@ -61,10 +62,13 @@ body {
     border-bottom: 2px solid transparent;
 }
 
-.nav-link:hover,
-.nav-link.active {
+.nav-link:hover {
     color: var(--gt-gold);
-    border-bottom-color: var(--gt-gold);
+}
+
+.nav-link.active {
+    color: var(--white);
+    border-bottom: 2px solid var(--gt-gold);
 }
 
 .mobile-menu-btn {
@@ -178,10 +182,11 @@ body {
 .about-section {
     max-width: 900px;
     margin: 5rem auto 0;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(10px);
     padding: 2rem;
     border-radius: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .about-title {
