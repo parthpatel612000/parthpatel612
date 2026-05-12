@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VW Beetle - Parth Patel</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">Parth Patel</div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <span class="hamburger"></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="skills.html" class="nav-link">Skills</a></li>
+                <li><a href="projects.html" class="nav-link active">Projects</a></li>
+                <li><a href="experience.html" class="nav-link">Experience</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="project-detail-container">
+        <a href="projects.html" class="back-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            Back to Projects
+        </a>
+
+        <div class="project-detail-header">
+            <h1 class="project-detail-title">Vintage Volkswagen Beetle Modeling</h1>
+            <div class="tech-tags">
+                <span class="tech-tag">Computer-Aided Design </span>
+                <span class="tech-tag">Siemens NX</span>
+                <span class="tech-tag">Automotive Design</span>
+                <span class="tech-tag">Surface Modeling</span>
+                <span class="tech-tag">GD&T</span>
+            </div>
+        </div>
+ <!-- Project Image -->
+        <div class="project-detail-image">
+            <img src="images/Beetle2.png" alt="E-Commerce Platform">
+        </div>
+ <!-- Project Content -->
+        <div class="project-detail-content">
+            <section class="project-section">
+                <h2>Overview</h2>
+                <p>This project report details the process of creating a 3D model of a classic Volkswagen Beetle using Siemens NX. The design takes inspiration from the famous “Herbie the Love Bug” and includes iconic livery like racing stripes and number 98. The model was constructed from a spline curve wireframe using surfacing and edge blending techniques with G1/G2 continuity, Reflection analysis verified that its shape met all curvature and tangent continuity requirements.</p>
+            </section>
+        </div>
+        <!-- PDF Preview Section -->
+        <div class="pdf-preview-section">
+            <h2 class="pdf-preview-title">Project Documentation</h2>
+            <div class="pdf-container">
+                <embed src="pdfs/VW Beetle Midterm Project.pdf" type="application/pdf" class="pdf-embed">
+                <p class="pdf-fallback">
+                    <a href="pdfs/VW Beetle Midterm Project.pdf" target="_blank" class="pdf-download-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        View Full PDF Documentation
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">&copy; 2026 Parth Patel. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
