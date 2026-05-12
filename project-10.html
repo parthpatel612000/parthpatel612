@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VW Beetle - Parth Patel</title>
+    <title>Fixed-Wing UAV - Parth Patel</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -32,33 +32,125 @@
         </a>
 
         <div class="project-detail-header">
-            <h1 class="project-detail-title">Vintage Volkswagen Beetle Modeling</h1>
+            <h1 class="project-detail-title">Fixed-Wing UAV Design</h1>
             <div class="tech-tags">
-                <span class="tech-tag">Computer-Aided Design </span>
                 <span class="tech-tag">Siemens NX</span>
-                <span class="tech-tag">Automotive Design</span>
+                <span class="tech-tag">Structural Mechanics</span>
+                <span class="tech-tag">Aircraft Design</span>
                 <span class="tech-tag">Surface Modeling</span>
-                <span class="tech-tag">GD&T</span>
+                <span class="tech-tag">FEA/NASTRAN</span>
             </div>
         </div>
- <!-- Project Image -->
-        <div class="project-detail-image">
-            <img src="images/Beetle2.png" alt="E-Commerce Platform">
-        </div>
+<!-- Slideshow HTML -->
+
+<div class="slideshow-container">
+    <div class="slide fade">
+        <img src="images/Landing Gear FEA.png" alt="Landing Gear FEA">
+        <div class="caption">Landing Gear FEA</div>
+    </div>
+
+    <div class="slide fade">
+        <img src="images/Wing FEA.png" alt="Wing FEA">
+        <div class="caption">Wing FEA</div>
+    </div>
+
+    <div class="slide fade">
+        <img src="images/Crash Test FEA.png" alt="Crash Test FEA Attempt>
+        <div class="caption">Crash Test FEA Attempt</div>
+    </div>
+
+    <div class="slide fade">
+        <img src="images/Side.png" alt="Side View">
+        <div class="caption">Side View</div>
+    </div>
+
+    <div class="slide fade">
+        <img src="images/Bottom.png" alt="Bottom View>
+        <div class="caption">Bottom View</div>
+    </div>
+
+    <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+    <a class="next" onclick="changeSlide(1)">&#10095;</a>
+</div>
+
+<div class="dots-container">
+    <span class="dot" onclick="currentSlide(1)"></span>
+    <span class="dot" onclick="currentSlide(2)"></span>
+    <span class="dot" onclick="currentSlide(3)"></span>
+    <span class="dot" onclick="currentSlide(4)"></span>
+    <span class="dot" onclick="currentSlide(5)"></span>
+
+</div>
+
+        <!-- Slideshow JavaScript -->
+<script>
+let slideIndex = 1;
+let slideTimer;
+
+document.addEventListener('DOMContentLoaded', function() {
+    showSlide(slideIndex);
+    autoSlide();
+});
+
+function changeSlide(n) {
+    clearTimeout(slideTimer);
+    showSlide(slideIndex += n);
+    autoSlide();
+}
+
+function currentSlide(n) {
+    clearTimeout(slideTimer);
+    showSlide(slideIndex = n);
+    autoSlide();
+}
+
+function showSlide(n) {
+    const slides = document.getElementsByClassName('slide');
+    const dots = document.getElementsByClassName('dot');
+
+    if (n > slides.length) slideIndex = 1;
+    if (n < 1) slideIndex = slides.length;
+
+    for (let i = 0; i < slides.length; i++) {
+        slides[i].style.display = 'none';
+    }
+
+    for (let i = 0; i < dots.length; i++) {
+        dots[i].className = dots[i].className.replace(' active', '');
+    }
+
+    slides[slideIndex - 1].style.display = 'block';
+    dots[slideIndex - 1].className += ' active';
+}
+
+function autoSlide() {
+    slideTimer = setTimeout(function() {
+        slideIndex++;
+        showSlide(slideIndex);
+        autoSlide();
+    }, 5000);
+}
+</script>
  <!-- Project Content -->
         <div class="project-detail-content">
             <section class="project-section">
                 <h2>Overview</h2>
-                <p>This project report details the process of creating a 3D model of a classic Volkswagen Beetle using Siemens NX. The design takes inspiration from the famous “Herbie the Love Bug” and includes iconic livery like racing stripes and number 98. The model was constructed from a spline curve wireframe using surfacing and edge blending techniques with G1/G2 continuity, Reflection analysis verified that its shape met all curvature and tangent continuity requirements.</p>
+                <p>This project details the design and structural validation of a small fixed wing UAV built specifically for drone defense applications. Modeled entirely in Siemens NX, the assembly includes a carbon fiber fuselage, moving ailerons, a rear mounted four blade propeller, and retractable landing gear. The report also features FEA validated against static based calculations on the wings and landing linkage to ensure they can withstand expected flight pressures and tension.</p>
             </section>
         </div>
+        
+        <a href="ME_4042_UAV_Final_Project_Models.zip" download class="project-detail-button">
+            
+    Download Project CAD Files
+            
+        </a>
         <!-- PDF Preview Section -->
         <div class="pdf-preview-section">
             <h2 class="pdf-preview-title">Project Documentation</h2>
             <div class="pdf-container">
-                <embed src="pdfs/VW Beetle Midterm Project.pdf" type="application/pdf" class="pdf-embed">
+                <embed src="pdfs/ME4042_UAV_Final_Report.pdf" type="application/pdf" class="pdf-embed">
                 <p class="pdf-fallback">
-                    <a href="pdfs/VW Beetle Midterm Project.pdf" target="_blank" class="pdf-download-link">
+                    <a href="pdfs/ME4042_UAV_Final_Report.pdf" target="_blank" class="pdf-download-link">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                             <polyline points="7 10 12 15 17 10"></polyline>
