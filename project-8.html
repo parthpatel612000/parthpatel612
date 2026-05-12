@@ -41,10 +41,84 @@
                 <span class="tech-tag">Computer Aided Design (CAD)</span>
             </div>
         </div>
- <!-- Project Image -->
-        <div class="project-detail-image">
-            <img src="images/cuas.png" alt="E-Commerce Platform">
-        </div>
+!-- Slideshow HTML -->
+
+<div class="slideshow-container">
+    <div class="slide fade">
+        <img src="images/Final Presentation-Team 7 Create X.jpg" alt="Presentation Poster">
+        <div class="caption">Presentation Poster</div>
+    </div>
+
+    <div class="slide fade">
+        <img src="images/cuas.png" alt="Logic Graph">
+        <div class="caption">Logic Graph</div>
+    </div>
+
+
+    <div class="slide fade">
+        <img src="images/IMG_5851.jpeg" alt="Expo Setup">
+        <div class="caption">Expo Setup</div>
+    </div>
+
+    <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+    <a class="next" onclick="changeSlide(1)">&#10095;</a>
+</div>
+
+<div class="dots-container">
+    <span class="dot" onclick="currentSlide(1)"></span>
+    <span class="dot" onclick="currentSlide(2)"></span>
+    <span class="dot" onclick="currentSlide(3)"></span>
+</div>
+
+        <!-- Slideshow JavaScript -->
+<script>
+let slideIndex = 1;
+let slideTimer;
+
+document.addEventListener('DOMContentLoaded', function() {
+    showSlide(slideIndex);
+    autoSlide();
+});
+
+function changeSlide(n) {
+    clearTimeout(slideTimer);
+    showSlide(slideIndex += n);
+    autoSlide();
+}
+
+function currentSlide(n) {
+    clearTimeout(slideTimer);
+    showSlide(slideIndex = n);
+    autoSlide();
+}
+
+function showSlide(n) {
+    const slides = document.getElementsByClassName('slide');
+    const dots = document.getElementsByClassName('dot');
+
+    if (n > slides.length) slideIndex = 1;
+    if (n < 1) slideIndex = slides.length;
+
+    for (let i = 0; i < slides.length; i++) {
+        slides[i].style.display = 'none';
+    }
+
+    for (let i = 0; i < dots.length; i++) {
+        dots[i].className = dots[i].className.replace(' active', '');
+    }
+
+    slides[slideIndex - 1].style.display = 'block';
+    dots[slideIndex - 1].className += ' active';
+}
+
+function autoSlide() {
+    slideTimer = setTimeout(function() {
+        slideIndex++;
+        showSlide(slideIndex);
+        autoSlide();
+    }, 5000);
+}
+</script>
  <!-- Project Content -->
         <div class="project-detail-content">
             <section class="project-section">
