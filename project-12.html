@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wind Farms - Parth Patel</title>
+    <title>Systems Lab - Parth Patel</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -32,12 +32,12 @@
         </a>
 
         <div class="project-detail-header">
-            <h1 class="project-detail-title">Aerodynamic Design for Colorado Wind Farms</h1>
+            <h1 class="project-detail-title">Thermodynamic and Mechanical Systems Characterization</h1>
             <div class="tech-tags">
                 <span class="tech-tag">Energy Systems Analysis</span>
-                <span class="tech-tag">Wind Engineering</span>
-                <span class="tech-tag">Economic Research</span>
-                <span class="tech-tag">System Dynamics</span>
+                <span class="tech-tag">Thermodynamics</span>
+                <span class="tech-tag">Experimental Methodologies</span>
+                <span class="tech-tag">MATLAB/Simulink</span>
                 <span class="tech-tag">Machine Design</span>
             </div>
         </div>
@@ -46,28 +46,23 @@
 
 <div class="slideshow-container">
     <div class="slide fade">
-        <img src="images/Imported_pressure_2.png" alt="Turbine Pressure">
+        <img src="images/ic2.png" alt="Turbine Pressure">
         <div class="caption">Turbine Pressure</div>
     </div>
 
     <div class="slide fade">
-        <img src="images/local_blade_velocity.png" alt="Local Blade Velocity">
+        <img src="images/ic3.png" alt="Local Blade Velocity">
         <div class="caption">Local Blade Velocity</div>
     </div>
 
     <div class="slide fade">
-        <img src="images/fea-equiv-stress-front.png" alt="Blade FEA">
+        <img src="images/ic4.png" alt="Blade FEA">
         <div class="caption">Blade FEA</div>
     </div>
 
     <div class="slide fade">
-        <img src="images/pressure-contour-front.png" alt="Blade Front">
+        <img src="images/ic5.png" alt="Blade Front">
         <div class="caption">Blade Front</div>
-    </div>
-
-    <div class="slide fade">
-        <img src="images/pressure-contour-back.png" alt="Blade Rear">
-        <div class="caption">Blade Rear</div>
     </div>
 
     <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
@@ -136,16 +131,141 @@ function autoSlide() {
         <div class="project-detail-content">
             <section class="project-section">
                 <h2>Overview</h2>
-                <p>This project evaluates the technical and economic feasibility of a wind farm in Colorado, utilizing ANSYS Mechanical and Fluent for CFD and FEA of 1.5 MW GE wind turbines. The design optimizes a 15-meter rotor for high altitude atmospheric conditions, identifying a 4° pitch as the ideal configuration for maximizing power output. Structural analysis utilizing WT_Perf confirms a peak von-Mises stress of 26.6 MPa, validating that the turbine can safely handle mechanical loads while producing energy at a cost of 0.503 cents/kWh.</p>
+                <p>Over two consecutive weeks of experimental testing, I evaluated the thermodynamic and mechanical losses of two pressurized air energy conversion systems to quantify the divergence between idealized models and empirical performance.</p>
+                <p>The first test was a pneumatic internal combustion engine coupled to an electric motor and variable inertia flywheels. By characterizing transient acceleration and steady state velocity limits, I established a combined Coulomb and Newtonian friction model and verified the system moment of inertia. Integrating torque data over the four stroke cycle revealed that experimental work of air achieved only thirty percent of theoretical adiabatic predictions due to severe heat transfer and piston ring blow-by. I utilized these empirical constraints to optimize the pneumatic injection window at a 0.8 volts motor setting, maximizing the net positive power output at 97.9 Watts. </p>
             </section>
         </div>
         <!-- PDF Preview Section -->
         <div class="pdf-preview-section">
-            <h2 class="pdf-preview-title">Project Documentation</h2>
+            <h2 class="pdf-preview-title">IC Engine Documentation</h2>
             <div class="pdf-container">
-                <embed src="pdfs/Colorado Wind Farm Design.pdf" type="application/pdf" class="pdf-embed">
+                <embed src="pdfs/ME3058_ICE_Report_L05B3T7_040326_1.pdf" type="application/pdf" class="pdf-embed">
                 <p class="pdf-fallback">
-                    <a href="pdfs/Colorado Wind Farm Design.pdf" target="_blank" class="pdf-download-link">
+                    <a href="pdfs/ME3058_ICE_Report_L05B3T7_040326_1.pdf" target="_blank" class="pdf-download-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        View Full PDF Documentation
+                    </a>
+                </p>
+            </div>
+        <div class="pdf-preview-section">
+            <h2 class="pdf-preview-title">Simulink Logic</h2>
+            <div class="pdf-container">
+                <embed src="pdfs/SimulinkPIDControllers.pdf" type="application/pdf" class="pdf-embed">
+                <p class="pdf-fallback">
+                    <a href="pdfs/SimulinkPIDControllers.pdf" target="_blank" class="pdf-download-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        View Full PDF Documentation
+                    </a>
+                </p>
+            </div>
+        </div>
+        <!-- Slideshow HTML -->
+
+<div class="slideshow-container">
+    <div class="slide fade">
+        <img src="images/ref1.png" alt="Turbine Pressure">
+        <div class="caption">Turbine Pressure</div>
+    </div>
+
+    <div class="slide fade">
+        <img src="images/ref2.png" alt="Local Blade Velocity">
+        <div class="caption">Local Blade Velocity</div>
+    </div>
+
+    <div class="slide fade">
+        <img src="images/ref3.png" alt="Blade FEA">
+        <div class="caption">Blade FEA</div>
+    </div>
+
+    <div class="slide fade">
+        <img src="images/ref4.png" alt="Blade Front">
+        <div class="caption">Blade Front</div>
+    </div>
+
+    <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+    <a class="next" onclick="changeSlide(1)">&#10095;</a>
+</div>
+
+<div class="dots-container">
+    <span class="dot" onclick="currentSlide(1)"></span>
+    <span class="dot" onclick="currentSlide(2)"></span>
+    <span class="dot" onclick="currentSlide(3)"></span>
+    <span class="dot" onclick="currentSlide(4)"></span>
+    <span class="dot" onclick="currentSlide(5)"></span>
+
+</div>
+
+        <!-- Slideshow JavaScript -->
+<script>
+let slideIndex = 1;
+let slideTimer;
+
+document.addEventListener('DOMContentLoaded', function() {
+    showSlide(slideIndex);
+    autoSlide();
+});
+
+function changeSlide(n) {
+    clearTimeout(slideTimer);
+    showSlide(slideIndex += n);
+    autoSlide();
+}
+
+function currentSlide(n) {
+    clearTimeout(slideTimer);
+    showSlide(slideIndex = n);
+    autoSlide();
+}
+
+function showSlide(n) {
+    const slides = document.getElementsByClassName('slide');
+    const dots = document.getElementsByClassName('dot');
+
+    if (n > slides.length) slideIndex = 1;
+    if (n < 1) slideIndex = slides.length;
+
+    for (let i = 0; i < slides.length; i++) {
+        slides[i].style.display = 'none';
+    }
+
+    for (let i = 0; i < dots.length; i++) {
+        dots[i].className = dots[i].className.replace(' active', '');
+    }
+
+    slides[slideIndex - 1].style.display = 'block';
+    dots[slideIndex - 1].className += ' active';
+}
+
+function autoSlide() {
+    slideTimer = setTimeout(function() {
+        slideIndex++;
+        showSlide(slideIndex);
+        autoSlide();
+    }, 5000);
+}
+</script>
+ <!-- Project Content -->
+        <div class="project-detail-content">
+            <section class="project-section">
+                <h2>Overview</h2>
+                <p>The following week I utilized the same pressurized air system but for mechanical work to cool an insulated aluminum load with a vortex tube refrigeration system. Applying steady state and transient energy balances, I characterized the nonlinear temperature outputs and linear mass flow rates as functions of vortex tube inlet pressure. Similar to the adiabatic deviations in the pneumatic engine, thermal evaluation exposed critical systemic inefficiencies where the experimental thermal resistance plateaued at 3.1 Kelvin seconds per Joule, drastically underperforming the geometric theoretical limit of 25.51 Kelvin seconds per Joule. Statistical analysis determined this discrepancy was driven by parasitic convective heat leaks at the unsealed tubing sections, proving that simplified lumped capacitance models are insufficient for physical assemblies with structural boundary flaws.</p>
+            </section>
+        </div>
+        <!-- PDF Preview Section -->
+        <div class="pdf-preview-section">
+            <h2 class="pdf-preview-title">Refrigeration Compressor Documentation</h2>
+            <div class="pdf-container">
+                <embed src="pdfs/ME3058_Refrigeration_Report_L05B4T5_041726.pdf" type="application/pdf" class="pdf-embed">
+                <p class="pdf-fallback">
+                    <a href="pdfs/ME3058_Refrigeration_Report_L05B4T5_041726.pdf" target="_blank" class="pdf-download-link">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                             <polyline points="7 10 12 15 17 10"></polyline>
@@ -159,7 +279,7 @@ function autoSlide() {
     </div>
     <footer class="footer">
         <div class="footer-content">
-            <p class="footer-text">&copy; 2025 Parth Patel. All rights reserved.</p>
+            <p class="footer-text">&copy; 2026 Parth Patel. All rights reserved.</p>
         </div>
     </footer>
 
