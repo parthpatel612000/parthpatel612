@@ -14,7 +14,7 @@ const fmtT = (t) => { t = Math.max(0, Math.floor(t)); const p = (n) => String(n)
 const MKWORD = { hp: (v) => `+${v} hull`, mesh: (v) => `+${v} km mesh`, stock: (v) => `+${v} round${v > 1 ? 's' : ''}`, regen: (v) => `${Math.round(v * 100)}% faster reload`, pk: (v) => `+${Math.round(v * 100)}% hit`,
   air: (v) => `+${v} km air radar`, gnd: (v) => `+${v} km ground sensing`, id: (v) => `+${v} km ID reach`, idRate: (v) => `+${Math.round(v * 100)}% ID speed`, speed: (v) => `+${Math.round(v * 100)}% speed`,
   dmg: (v) => `+${Math.round(v * 100)}% damage`, jam: (v) => `+${v} km jam bubble`, energy: (v) => `+${v} jammer energy`, esm: (v) => `+${v} km listening`, station: (v) => `+${v} s on station`,
-  aam: (v) => `+${v} AAM`, rkt: (v) => `+${v} rocket salvos`, b100: (v) => `+${v} Barracuda-100M`, ci: (v) => `+${v} interceptors`, range: (v) => v < 1 ? `+${Math.round(v * 100)}% range` : `+${v} km range`,
+  aam: (v) => `+${v} AAM`, rkt: (v) => `+${v} rocket salvos`, b100: (v) => `+${v} Moray-1`, ci: (v) => `+${v} interceptors`, range: (v) => v < 1 ? `+${Math.round(v * 100)}% range` : `+${v} km range`,
   supplyRate: (v) => `+${Math.round(v * 100)}% supply`, cost: (v) => `${Math.round(v * 100)}% cheaper` };
 const mkText = (o) => Object.entries(o || {}).map(([k, v]) => (MKWORD[k] ? MKWORD[k](v) : k)).join(' · ');
 
@@ -26,9 +26,9 @@ function castLine(who, text) {
 function prodStats(P) {
   const out = [];
   const T = P.unit ? KW.UT[P.unit] : null;
-  if (P.id === 'wisp') return [['TYPE', 'Passive IR'], ['FITS', 'Sentry, Ghost-X'], ['ID SPEED', '+15 to 30%'], ['EMITS', 'Nothing'], ['NIGHT', 'Full sight']];
+  if (P.id === 'wisp') return [['TYPE', 'Passive IR'], ['FITS', 'Vigil, Shade-X'], ['ID SPEED', '+15 to 30%'], ['EMITS', 'Nothing'], ['NIGHT', 'Full sight']];
   if (P.id === 'srm') return [['FITS', 'Rocket shots'], ['SPEED', 'Faster'], ['MK II', '+20% range'], ['MK III', '+6% hit'], ['COST', `${P.buy} cr`]];
-  if (P.id === 'bolt') { const W = KW.WT.boltm; return [['RECON', 'Bolt quad'], ['STRIKE', 'Bolt-M'], ['RANGE', `${W.range} km`], ['ROUNDS', `${KW.UT.team.stock}`], ['BATTERY', '10 min']]; }
+  if (P.id === 'bolt') { const W = KW.WT.boltm; return [['RECON', 'Jolt quad'], ['STRIKE', 'Jolt-M'], ['RANGE', `${W.range} km`], ['ROUNDS', `${KW.UT.team.stock}`], ['BATTERY', '10 min']]; }
   if (!T) return out;
   out.push(['HULL', String(T.hp)]);
   if (T.speed) out.push(['SPEED', `${fmtN(T.speed)} km/h`]);
@@ -154,7 +154,7 @@ export class Menus {
       h += `<section class="panel card next"><span class="lbl" style="color:var(--n)">CAMPAIGN COMPLETE</span><h2>${esc(e.title.toUpperCase())}</h2><span class="quote">${esc(e.text)}</span><span class="dim" style="font-size:12.5px">Pick any mission on the map to replay it.</span></section>`;
     }
     // skills
-    h += `<section class="panel card" aria-label="Lattice skills"><div style="display:flex;justify-content:space-between;align-items:baseline"><span class="lbl">LATTICE SKILLS</span><span class="mono" style="font-size:11px;color:${p.sp ? 'var(--amber)' : 'var(--fg3)'}">${p.sp} point${p.sp === 1 ? '' : 's'} to spend</span></div><div class="skills">`;
+    h += `<section class="panel card" aria-label="Trellis skills"><div style="display:flex;justify-content:space-between;align-items:baseline"><span class="lbl">TRELLIS SKILLS</span><span class="mono" style="font-size:11px;color:${p.sp ? 'var(--amber)' : 'var(--fg3)'}">${p.sp} point${p.sp === 1 ? '' : 's'} to spend</span></div><div class="skills">`;
     for (const b of KW.BRANCHES) {
       h += `<div class="col"><span class="lbl" style="font-size:10px">${esc(b.name)}</span>`;
       for (const s of KW.SKILLS.filter((k) => k.br === b.id)) {
@@ -242,7 +242,7 @@ export class Menus {
       for (const pd of def.pads || []) { g.strokeStyle = 'rgba(255,255,255,0.7)'; g.setLineDash([2, 2]); g.beginPath(); for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3 + Math.PI / 6; const x = X(pd[0]) + Math.cos(a) * 5, y = Y(pd[1]) + Math.sin(a) * 5; k ? g.lineTo(x, y) : g.moveTo(x, y); } g.closePath(); g.stroke(); g.setLineDash([]); }
       for (const s of def.sites || []) { g.fillStyle = 'rgba(108,198,255,0.25)'; g.strokeStyle = '#6cc6ff'; g.lineWidth = 1.6; g.beginPath(); g.arc(X(s.x), Y(s.y), 6, 0, Math.PI * 2); g.fill(); g.stroke(); g.fillStyle = '#d7efff'; g.fillText(s.name.toUpperCase(), X(s.x) + 9, Y(s.y) - 6); }
       const [mx, my] = def.menace; g.fillStyle = 'rgba(108,198,255,0.3)'; g.strokeStyle = '#6cc6ff'; g.fillRect(X(mx) - 6, Y(my) - 4.5, 12, 9); g.strokeRect(X(mx) - 6, Y(my) - 4.5, 12, 9);
-      g.fillStyle = '#d7efff'; g.fillText('MENACE', X(mx) - 14, Y(my) + 17);
+      g.fillStyle = '#d7efff'; g.fillText('MERIDIAN', X(mx) - 14, Y(my) + 17);
       if (def.convoy) { g.strokeStyle = 'rgba(108,198,255,0.6)'; g.setLineDash([4, 4]); const r = def.map.roads[def.convoy.road]; g.beginPath(); r.forEach(([x, y], k) => k ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y))); g.stroke(); g.setLineDash([]); }
       g.strokeStyle = 'rgba(255,107,94,0.75)'; g.fillStyle = '#ffb3ab'; g.font = '600 10px "Barlow Semi Condensed", sans-serif';
       const hdir = (def.map.high && def.map.high.side) || 'north';
@@ -257,8 +257,8 @@ export class Menus {
     const forced = new Set(def.forced || []);
     let h = `<div style="display:flex;justify-content:space-between;align-items:baseline"><span class="lbl">LOADOUT</span><span class="mono" style="font-size:11.5px;color:${used > cap ? 'var(--h)' : 'var(--fg2)'}">mesh capacity ${used} / ${cap}</span></div>
       <div class="cap">${Array.from({ length: cap }, (_, k) => `<i class="${k < used ? 'on' : ''}"></i>`).join('')}</div>
-      <div class="plist"><div class="prod in" style="cursor:default">${icon('menace')}<div><div class="nm">Menace</div><div class="sb">Command node, always deployed</div></div><span class="cost">FREE</span></div>
-      <div class="prod in" style="cursor:default">${icon('sentry')}<div><div class="nm">Sentry towers</div><div class="sb">${(def.pre || []).length} up · build more on ${def.pads.length} pads for 25 supply</div></div><span class="cost">FREE</span></div>`;
+      <div class="plist"><div class="prod in" style="cursor:default">${icon('menace')}<div><div class="nm">Meridian</div><div class="sb">Command node, always deployed</div></div><span class="cost">FREE</span></div>
+      <div class="prod in" style="cursor:default">${icon('sentry')}<div><div class="nm">Vigil towers</div><div class="sb">${(def.pre || []).length} up · build more on ${def.pads.length} pads for 25 supply</div></div><span class="cost">FREE</span></div>`;
     for (const P of Rules.loadoutProducts()) {
       const av = Rules.available(p, P.id), on = this.loadout.includes(P.id), fz = forced.has(P.id);
       const fits = on || used + P.slot <= cap;
@@ -323,7 +323,7 @@ export class Menus {
     const st = prodStats(P);
     $('hgInfo').innerHTML = `${st.length ? `<div class="hg-stats" style="grid-template-columns:repeat(${st.length},minmax(0,1fr))">${st.map(([k, v]) => `<div class="stat"><span class="k">${k}</span><span class="v" style="font-size:13px">${esc(v)}</span></div>`).join('')}</div>` : ''}
       <p>${esc(P.desc)}</p>
-      <div class="real"><span class="lbl" style="font-size:10px">IN THE REAL WORLD</span><p style="margin:0">${esc(P.real)} Game values are fictional.</p><div class="row" style="gap:12px">${(P.src || []).map(([t, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener" style="font-size:12px">Source: ${esc(t.split(', ').slice(-1)[0])}</a>`).join('')}</div></div>`;
+      <div class="real"><span class="lbl" style="font-size:10px">REAL-WORLD CLASS</span><p style="margin:0">${esc(P.real)} Game values are fictional.</p><div class="row" style="gap:12px">${(P.src || []).map(([t, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener" style="font-size:12px">Source: ${esc(t.split(', ').slice(-1)[0])}</a>`).join('')}</div></div>`;
     let h = '';
     if (!av) {
       h = `<span class="lbl">LOCKED</span><p style="margin:0;font-size:13.5px;color:#d6dde2;line-height:1.45">Task Force Warden receives ${esc(P.name)} at mission ${Rules.idx(P.unlock) + 1}, ${esc(KW.MISSION[P.unlock].name)}.</p>`;
@@ -420,7 +420,7 @@ export class Menus {
       let take = null;
       if (e.kind === 'end') take = [e.t, t, e.cat === 'good' ? '#c6efc6' : '#ffb3ab'];
       else if (/destroyed/.test(t) && /(MOTHERSHIP|HYDRA|SPIRE|LAUNCH SITE|C2 POST|STATIC|SCYTHE|SHRIKE|TALON|BASTION)/.test(t)) take = [e.t, t.replace(/^Splash\. /, ''), '#ffcf85'];
-      else if (e.cat === 'bad' && /(lost|destroyed|down|failed|damaged)/i.test(t) && e.who !== 'LATTICE') take = [e.t, `${e.who}: ${t}`, '#ffb3ab'];
+      else if (e.cat === 'bad' && /(lost|destroyed|down|failed|damaged)/i.test(t) && e.who !== 'TRELLIS') take = [e.t, `${e.who}: ${t}`, '#ffb3ab'];
       else if (/identified HOSTILE: (MOTHERSHIP|SCYTHE|SHRIKE|TALON|HYDRA|SPIRE|BASTION|STATIC|C2 POST|LAUNCH SITE)/.test(t)) take = [e.t, t, null];
       else if (/arrived|arrives/i.test(t) && /truck|Haven/i.test(t)) take = [e.t, t, '#c6efc6'];
       if (!take) continue;
@@ -450,7 +450,7 @@ export class Menus {
     const rk = (extra.shots && extra.shots.srm) || 0;
     if (rk) rows.push({ name: 'Rockets', used: rk, def: (sim.stats.prodXP && sim.stats.prodXP.srm) || 0, ver: '', note: '' });
     const sentries = sim.ents.filter((e) => e.side === 'f' && e.type === 'sentry');
-    rows.push({ name: 'Sentry towers', used: sentries.length, def: 0, ver: Rules.version(p.model.sentry), note: `${sim.stats.built || 0} built this mission` });
+    rows.push({ name: 'Vigil towers', used: sentries.length, def: 0, ver: Rules.version(p.model.sentry), note: `${sim.stats.built || 0} built this mission` });
     return rows;
   }
   drawAfterMap(def, sim, extra) {

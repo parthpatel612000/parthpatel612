@@ -24,7 +24,7 @@ const BEHAVIOR = {
   talon: 'Attack helicopter. Rockets against ground assets.', scythe: 'Fighter-bomber. Air-to-air missiles; hunts your aircraft and carries cruise missiles.',
   mother: 'Drone carrier. Launches swarms in flight. Point defense knocks down single shots: salvo it.',
   jackal: 'Pickup with MANPADS. Shoots at low aircraft within 3.5 km.', ram: 'Armored carrier with a cannon.', bastion: 'Main battle tank. Light weapons barely scratch it.',
-  hydra: 'Rocket artillery. Fires long salvos at sites from a hide.', spire: 'SAM site. Its radar transmits, so Pulsar can hear it. Cruise missiles fly under it.',
+  hydra: 'Rocket artillery. Fires long salvos at sites from a hide.', spire: 'SAM site. Its radar transmits, so Quasar can hear it. Cruise missiles fly under it.',
   static: 'EW jammer. Shrinks your mesh inside its bubble.', c2post: 'Vanta command post.', lsite: 'Drone launch site. Feeds raids until destroyed.',
   airliner: 'Civil airliner on the corridor. Broadcasting ADS-B.', civcar: 'Civilian vehicle on the road.', medevac: 'Air ambulance. Never engage.', boat: 'Fishing boat.',
 };
@@ -437,7 +437,7 @@ export class Mission {
       case 'mark': {
         if (!sel) break;
         const gs = sim.friendlies().filter((u) => u.type === 'ghost');
-        if (!gs.length) { say('Mark needs a Ghost-X.'); break; }
+        if (!gs.length) { say('Mark needs a Shade-X.'); break; }
         gs.sort((a, b) => hyp(a.x - sel.x, a.y - sel.y) - hyp(b.x - sel.x, b.y - sel.y));
         const err = sim.cmdMark(gs[0], sel);
         if (err && /Get within/.test(err)) { sim.cmdMove(gs[0], sel.trk ? sel.trk.ex : sel.x, sel.trk ? sel.trk.ey : sel.y); say(null); this.toast(`${gs[0].name} moving to mark`); }
@@ -868,10 +868,10 @@ export class Mission {
     if (air && !['altius', 'bolt'].includes(e.type)) acts.push(['rtb', '', e.type === 'fury' ? 'Leave' : 'Return']);
     if (e.type === 'pulsar') acts.push(['jamone', '', e.jamOn ? 'Jam off' : 'Jam']);
     if (e.type === 'altius') acts.push(['ew', '', e.ewOn ? 'EW off' : 'EW on']);
-    if (e.type === 'tubes') acts.push(['mode', 'altius', 'Launch Altius']);
+    if (e.type === 'tubes') acts.push(['mode', 'altius', 'Launch Zenith']);
     if (e.type === 'thunder') acts.push(['mode', 'thunder', e.strike ? 'Move strike' : 'Strike']);
-    if (e.type === 'team') acts.push(['mode', 'bolt', 'Throw Bolt']);
-    if (e.type === 'thunder' && e.ammo && e.ammo.a6 > 0) acts.push(['mode', 'thunderAltius', 'Release Altius']);
+    if (e.type === 'team') acts.push(['mode', 'bolt', 'Throw Jolt']);
+    if (e.type === 'thunder' && e.ammo && e.ammo.a6 > 0) acts.push(['mode', 'thunderAltius', 'Release Zenith']);
     if (e.type === 'omen') acts.push(['mode', 'resupply', 'Resupply']);
     if (e.type === 'ghost') acts.push(['mode', 'marktrk', 'Mark']);
     if (e.vmax) acts.push(['follow', '', this.ui.follow === e.id ? 'Unfollow' : 'Follow']);
@@ -959,19 +959,19 @@ export class Mission {
     const sim = this.sim, ui = this.ui, F = sim.friendlies(), fd = sim.pace.fd || 1;
     const items = [];
     const free = sim.pads.filter((p) => sim.padFree(p)).length;
-    items.push({ c: 'mode', v: 'build', n: 'Sentry', cost: sim.costOf('sentry'), off: free ? '' : 'NO PAD' });
+    items.push({ c: 'mode', v: 'build', n: 'Vigil', cost: sim.costOf('sentry'), off: free ? '' : 'NO PAD' });
     const tubes = F.filter((u) => u.type === 'tubes');
     if (tubes.length) {
       const st = tubes.reduce((a, u) => a + u.stock, 0);
       const cd = st ? 0 : Math.min(...tubes.map((u) => Math.max(0, (u.T.regen || 0) - (u.regenT || 0)) / fd));
-      items.push({ c: 'mode', v: 'altius', n: 'Altius', cost: sim.costOf('altius'), cd });
+      items.push({ c: 'mode', v: 'altius', n: 'Zenith', cost: sim.costOf('altius'), cd });
     }
-    if (this.loadout.includes('fury')) { const up = F.some((u) => u.type === 'fury'); items.push({ c: 'mode', v: 'fury', n: 'Fury', cost: sim.costOf('fury'), cd: up ? 0 : sim.furyCd / fd, busy: up ? 'IN AIR' : '' }); }
+    if (this.loadout.includes('fury')) { const up = F.some((u) => u.type === 'fury'); items.push({ c: 'mode', v: 'fury', n: 'Wrath', cost: sim.costOf('fury'), cd: up ? 0 : sim.furyCd / fd, busy: up ? 'IN AIR' : '' }); }
     const th = F.find((u) => u.type === 'thunder');
-    if (this.loadout.includes('thunder')) items.push({ c: 'mode', v: 'thunder', n: 'Thunder', cost: th && th.strike ? 0 : sim.costOf('thunder'), cd: th && th.rearm ? th.rearm / fd : 0, off: th ? '' : 'LOST', retask: !!(th && th.strike) });
+    if (this.loadout.includes('thunder')) items.push({ c: 'mode', v: 'thunder', n: 'Tremor', cost: th && th.strike ? 0 : sim.costOf('thunder'), cd: th && th.rearm ? th.rearm / fd : 0, off: th ? '' : 'LOST', retask: !!(th && th.strike) });
     items.push({ c: 'mode', v: 'rockets', n: 'Rockets', cost: sim.costOf('rockets'), cd: sim.rocketCd / fd });
     const team = F.find((u) => u.type === 'team');
-    if (team) items.push({ c: 'mode', v: 'bolt', n: 'Bolt', cost: 0, cd: team.boltCd / fd });
+    if (team) items.push({ c: 'mode', v: 'bolt', n: 'Jolt', cost: 0, cd: team.boltCd / fd });
     const ps = F.filter((u) => u.type === 'pulsar');
     if (ps.length) items.push({ c: 'jam', v: 'jam', n: ps.some((u) => u.jamOn) ? 'Jam off' : 'Jam', cost: 0, en: Math.round(100 * ps[0].energy / ps[0].maxEnergy) });
     const sig = items.map((i) => i.c + i.v + i.n).join('|');
@@ -1008,14 +1008,14 @@ export class Mission {
       return;
     }
     this.tickDirty = false; el._sig = sig;
-    const color = (w) => (KW.CAST[w] ? KW.CAST[w].color : w === 'LATTICE' ? '#7fd8cd' : '#a9c9e0');
+    const color = (w) => (KW.CAST[w] ? KW.CAST[w].color : w === 'TRELLIS' ? '#7fd8cd' : '#a9c9e0');
     const txc = (c) => (c === 'bad' ? '#ffc7c1' : c === 'warn' ? '#ffe2b5' : c === 'good' ? '#d6f0d6' : '#dfe5ea');
     const short = (e) => { const q = e.kind === 'hit' ? this.sim.byId(e.id) : null; return e.kind === 'lost' ? 'lost' : e.kind === 'harm' ? 'Civilian hit' : q ? Math.max(0, Math.round(100 * q.hp / q.maxHp)) + '%' : ''; };
     el.innerHTML = live.map(({ e, t }) => `<div class="msg" data-t="${t}"><span class="tx"><b style="color:${e.kind === 'harm' ? '#ffb3ab' : color(e.who)}">${esc(e.kind === 'harm' ? '' : e.who)}</b><span style="color:${txc(e.cat)}">${esc(short(e))}</span></span></div>`).join('') + `<button class="btn xs logbtn" type="button" data-cmd="log">Log</button>`;
   }
   logDlg() {
     const ev = this.sim.events.slice(-150).reverse();
-    const color = (w) => (KW.CAST[w] ? KW.CAST[w].color : w === 'LATTICE' ? '#7fd8cd' : '#a9c9e0');
+    const color = (w) => (KW.CAST[w] ? KW.CAST[w].color : w === 'TRELLIS' ? '#7fd8cd' : '#a9c9e0');
     const was = this.paused; this.paused = true; this.app.onModalClose = () => { this.paused = was; this.renderTop(); };
     this.app.modal(`<h3>Warden net</h3><div class="scroll" style="max-height:60vh;display:flex;flex-direction:column;gap:6px">${ev.map((e) => `<div class="msg" style="font-size:13px"><span class="tm">${fmtMS(e.t)}</span><span><b style="color:${color(e.who)}">${esc(e.who)}</b> ${esc(e.text)}</span></div>`).join('')}</div><div class="row end"><button class="btn primary" type="button" data-close>Close</button></div>`);
   }
