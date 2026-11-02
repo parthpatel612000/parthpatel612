@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kill Web and Autonomous Systems CAD Studies - Parth Patel</title>
+    <meta name="description" content="Kill Web, a browser command game with nine missions and five pace levels, plus three CAD assemblies and two isometric anatomy figures. Unofficial fan project, not affiliated with Anduril Industries.">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .kw-stage { position: relative; }
+        .kw-poster { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; padding: 0; cursor: pointer; background: #0b0f12 url("images/killweb-card.jpg") center / cover no-repeat; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 11%; }
+        .kw-poster::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0, 20, 40, 0.55), rgba(0, 20, 40, 0.1)); }
+        .kw-poster span { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.6rem; background: var(--gt-gold); color: var(--gt-navy); font-weight: 700; font-size: 1.1rem; padding: 0.85rem 1.6rem; border-radius: 0.5rem; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); }
+        .kw-poster:hover span, .kw-poster:focus-visible span { background: #c4b47a; }
+        .kw-poster:focus-visible { outline: 3px solid var(--gt-gold); outline-offset: 3px; }
+        .kw-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem; margin-top: 1.25rem; }
+        .kw-addr { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9rem; color: var(--gray); }
+        .kw-hint { color: var(--gray); font-size: 0.95rem; margin-top: 0.75rem; line-height: 1.6; }
+        .kw-legal { border-left: 4px solid var(--gt-gold); background: var(--white); padding: 1.25rem 1.5rem; border-radius: 0.5rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06); }
+        .kw-legal p { font-size: 1rem; }
+        .kw-legal a { color: var(--gt-navy); font-weight: 600; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">Parth Patel</div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <span class="hamburger"></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="skills.html" class="nav-link">Skills</a></li>
+                <li><a href="projects.html" class="nav-link active">Projects</a></li>
+                <li><a href="experience.html" class="nav-link">Experience</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="project-detail-container">
+        <a href="projects.html" class="back-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            Back to Projects
+        </a>
+
+        <div class="project-detail-header">
+            <h1 class="project-detail-title">Kill Web and Autonomous Systems CAD Studies</h1>
+            <div class="tech-tags">
+                <span class="tech-tag">JavaScript</span>
+                <span class="tech-tag">three.js / WebGL</span>
+                <span class="tech-tag">Real-Time Simulation</span>
+                <span class="tech-tag">Game Design</span>
+                <span class="tech-tag">CadQuery CAD</span>
+                <span class="tech-tag">Technical Illustration</span>
+            </div>
+        </div>
+
+<!-- Slideshow HTML -->
+
+<div class="slideshow-container">
+    <div class="slide fade">
+        <img src="images/killweb-title.jpg" alt="Kill Web title screen over generated terrain">
+        <div class="caption">Kill Web title screen</div>
+    </div>
+
+    <div class="slide fade">
+        <img src="images/killweb-mission.jpg" alt="Kill Web mission 9 with a raid closing on Kestrel City">
+        <div class="caption">Mission 9: a raid closes on Kestrel City</div>
+    </div>
+
+    <div class="slide fade">
+        <img src="images/killweb-terrain.jpg" alt="Close view of generated mission terrain with friendly assets">
+        <div class="caption">Generated 48 x 38 km mission terrain</div>
+    </div>
+
+    <div class="slide fade">
+        <img src="images/killweb-campaign.jpg" alt="Kill Web campaign map with nine mission pins">
+        <div class="caption">Campaign map: nine missions</div>
+    </div>
+
+    <div class="slide fade">
+        <img src="images/cad-altius.jpg" alt="Altius-600 class representative CAD model, exterior render">
+        <div class="caption">Altius-600 class CAD, exterior</div>
+    </div>
+
+    <div class="slide fade">
+        <img src="images/cad-fury.jpg" alt="YFQ-44A class representative CAD model, clean configuration">
+        <div class="caption">YFQ-44A class CAD, clean configuration</div>
+    </div>
+
+    <div class="slide fade">
+        <img src="images/cad-ghostx.jpg" alt="Original Ghost-X class ISR helicopter concept, CAD render">
+        <div class="caption">Ghost-X class helicopter concept (original design)</div>
+    </div>
+
+    <div class="slide fade">
+        <img src="images/anatomy-ghostx.jpg" alt="Isometric anatomy figure of a Ghost-X class helicopter field kit">
+        <div class="caption">Isometric anatomy: helicopter field kit</div>
+    </div>
+
+    <div class="slide fade">
+        <img src="images/anatomy-altius.jpg" alt="Isometric anatomy figure of an Altius-600 class launch test deck">
+        <div class="caption">Isometric anatomy: launch test deck</div>
+    </div>
+
+    <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+    <a class="next" onclick="changeSlide(1)">&#10095;</a>
+</div>
+
+<div class="dots-container">
+    <span class="dot" onclick="currentSlide(1)"></span>
+    <span class="dot" onclick="currentSlide(2)"></span>
+    <span class="dot" onclick="currentSlide(3)"></span>
+    <span class="dot" onclick="currentSlide(4)"></span>
+    <span class="dot" onclick="currentSlide(5)"></span>
+    <span class="dot" onclick="currentSlide(6)"></span>
+    <span class="dot" onclick="currentSlide(7)"></span>
+    <span class="dot" onclick="currentSlide(8)"></span>
+    <span class="dot" onclick="currentSlide(9)"></span>
+</div>
+
+        <!-- Slideshow JavaScript -->
+<script>
+let slideIndex = 1;
+let slideTimer;
+
+document.addEventListener('DOMContentLoaded', function() {
+    showSlide(slideIndex);
+    autoSlide();
+});
+
+function changeSlide(n) {
+    clearTimeout(slideTimer);
+    showSlide(slideIndex += n);
+    autoSlide();
+}
+
+function currentSlide(n) {
+    clearTimeout(slideTimer);
+    showSlide(slideIndex = n);
+    autoSlide();
+}
+
+function showSlide(n) {
+    const slides = document.getElementsByClassName('slide');
+    const dots = document.getElementsByClassName('dot');
+
+    if (n > slides.length) slideIndex = 1;
+    if (n < 1) slideIndex = slides.length;
+
+    for (let i = 0; i < slides.length; i++) {
+        slides[i].style.display = 'none';
+    }
+
+    for (let i = 0; i < dots.length; i++) {
+        dots[i].className = dots[i].className.replace(' active', '');
+    }
+
+    slides[slideIndex - 1].style.display = 'block';
+    dots[slideIndex - 1].className += ' active';
+}
+
+function autoSlide() {
+    slideTimer = setTimeout(function() {
+        slideIndex++;
+        showSlide(slideIndex);
+        autoSlide();
+    }, 5000);
+}
+</script>
+        <!-- Project Content -->
+        <div class="project-detail-content">
+            <section class="project-section">
+                <h2>Overview</h2>
+                <p>Kill Web is a real-time command game that runs in the browser. The player finds every track, identifies it, then pairs the right shooter, because nothing fires until a track is identified. It has nine missions on the fictional Kestrel Coast and five pace levels that speed the enemy up faster than the player. The same project documents three CAD assemblies modeled in Python and inspected in a custom three.js viewer, and two interactive isometric anatomy figures. Every game value is fictional, and the CAD renders show exterior shape only.</p>
+            </section>
+        </div>
+
+        <!-- Game Section -->
+        <div class="video-preview-section">
+            <h2 class="video-preview-title">Play Kill Web</h2>
+            <div class="video-container kw-stage" id="kwStage">
+                <button type="button" class="kw-poster" id="kwPlay" aria-label="Load and play Kill Web on this page">
+                    <span>&#9654; Play here</span>
+                </button>
+            </div>
+            <div class="kw-actions">
+                <a href="killweb/" class="project-detail-button" id="kwFull" target="_blank" rel="noopener">Play full size</a>
+                <span class="kw-addr" id="kwAddr">parth-patel.me/killweb</span>
+            </div>
+            <p class="kw-hint">Plays in landscape with mouse, trackpad or touch. Right-click a hostile to engage, N skips to the next raid, Space pauses. On a phone, open the full-size version and turn the phone sideways. Progress saves in your browser.</p>
+        </div>
+
+        <div class="project-detail-content">
+            <section class="project-section">
+                <h2>How the Game Works</h2>
+                <p>The simulation advances in fixed 0.25 s steps and never touches the DOM or WebGL, so the same code drives the browser game and a headless Node test harness. The client is 6,212 lines of JavaScript in 10 ES modules with no framework or build step. three.js renders each mission's 48 x 38 km map as a 640 x 507 height mesh under a 4,096 x 3,243 ground texture, with 1,491 to 6,377 instanced buildings per mission, all generated from the simulation's own terrain functions. Sound is synthesized at runtime, so the whole game is a 78-file, 36.8 MB static site.</p>
+                <p>Pace replaces unlock grinding: the full arsenal is available from mission 1, and at the top level raids arrive 1.75 times as often and fly 1.45 times as fast while friendly deployment speeds up by 1.4. A scripted commander plays every mission headless at every pace with 10 fixed seeds; the latest 450-run sweep wins 92.7% overall (87.8% to 98.9% by pace), and median mission time falls from 36 to 22 game minutes between the first and fifth pace levels. The harness caught design faults before players did, including a convoy mission that got easier at higher pace.</p>
+            </section>
+
+            <section class="project-section">
+                <h2>CAD Studies</h2>
+                <ul class="feature-list">
+                    <li>Altius-600 class tube-launched UAS, representative model: 60 unique parts, 150 instances, checked in flight and stowed configurations.</li>
+                    <li>YFQ-44A class aircraft, representative model: 125 unique parts, 130 instances.</li>
+                    <li>Ghost-X class quiet ISR helicopter, original home-built design: 93 unique parts, 142 instances.</li>
+                </ul>
+                <p>Every part is a parametric B-rep solid in CadQuery 2.8 on Open CASCADE 7.9, numbered by subsystem. All three assemblies report 0 clashes and 0 floating parts; the two fixed-wing models were confirmed with a two-stage check that screens every instance pair as meshes at 0.05 mm deflection, then re-tests candidates with exact B-rep booleans. Each assembly ships as one self-contained HTML viewer with orbit, standard views, explode, a live section plane and coloring by material or subsystem.</p>
+                <p>Only exterior renders are published. Parts lists, masses, materials and internal layouts stay private, and the YFQ-44A class render omits its underwing stores.</p>
+            </section>
+
+            <section class="project-section">
+                <h2>Isometric Anatomy Figures</h2>
+                <p>Two interactive SVG figures, drawn in a fixed isometric projection with four-tone shading and back-to-front painter's ordering, show how a Ghost-X class helicopter field kit (150 moving part groups in 10 assemblies, with WebGL rotor effects) and an Altius-600 class launch test deck (151 part groups, 13 explode steps) come apart.</p>
+            </section>
+
+            <section class="project-section">
+                <h2>Legal and Sourcing</h2>
+                <div class="kw-legal">
+                    <p>Kill Web and these studies are an unofficial, non-commercial fan project. They are not affiliated with, endorsed or sponsored by Anduril Industries, Inc. Anduril, Lattice, Altius, Ghost and the other product names are trademarks of Anduril Industries, Inc. or their respective owners, used only to identify the real products depicted.</p>
+                    <p>No Anduril logos, photographs, documents or data are used. Game terrain, art, unit models and sound are generated by code in this project; the CAD models are approximations from public photographs and published overall dimensions; every performance value in the game is fictional, and hangar notes summarize and link to public reporting. Third-party software: three.js (MIT License) and fonts under the SIL Open Font License. Built in AI-assisted development sessions with Claude (Anthropic). Questions or takedown requests: <a href="contact.html">contact</a>.</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- PDF Preview Section -->
+        <div class="pdf-preview-section">
+            <h2 class="pdf-preview-title">Project Documentation</h2>
+            <div class="pdf-container">
+                <embed src="pdfs/Kill%20Web%20and%20Autonomous%20Systems%20CAD%20Studies.pdf" type="application/pdf" class="pdf-embed">
+                <p class="pdf-fallback">
+                    <a href="pdfs/Kill%20Web%20and%20Autonomous%20Systems%20CAD%20Studies.pdf" target="_blank" class="pdf-download-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        View Full PDF Documentation
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">&copy; 2026 Parth Patel. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+    // Load the game only when asked, so the project page stays light.
+    (function () {
+        var btn = document.getElementById('kwPlay');
+        var stage = document.getElementById('kwStage');
+        btn.addEventListener('click', function () {
+            var f = document.createElement('iframe');
+            f.src = 'killweb/';
+            f.title = 'Kill Web game';
+            f.allow = 'fullscreen; autoplay';
+            f.setAttribute('allowfullscreen', '');
+            stage.appendChild(f);
+            btn.remove();
+            f.focus();
+        });
+    })();
+    // Full size opens killweb.parth-patel.me once that address answers; until then it opens /killweb/.
+    (function () {
+        var SUB = 'https://killweb.parth-patel.me/';
+        var a = document.getElementById('kwFull');
+        var addr = document.getElementById('kwAddr');
+        if (!window.fetch || !a) return;
+        var late = false;
+        var timer = setTimeout(function () { late = true; }, 4000);
+        fetch(SUB, { mode: 'no-cors', cache: 'no-store' }).then(function () {
+            if (late) return;
+            clearTimeout(timer);
+            a.href = SUB;
+            addr.textContent = 'killweb.parth-patel.me';
+        }).catch(function () {});
+    })();
+    </script>
+</body>
+</html>
