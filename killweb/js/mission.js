@@ -489,13 +489,7 @@ export class Mission {
     for (const o of opts) { if (fired >= count) break; if (sim.cmdPair(o.u, o.w, e) === null) fired++; if (o.w === 'b100' || o.w === 'a700m') break; }
     if (fired) { app.audio.confirm(); this.toast(`${fired > 1 ? fired + ' shooters' : opts[0].u.name} engaging`); } else { app.audio.error(); }
   }
-  toggleFullscreen() {
-    const d = document, el = d.documentElement;
-    try {
-      if (d.fullscreenElement || d.webkitFullscreenElement) (d.exitFullscreen || d.webkitExitFullscreen).call(d);
-      else { const r = (el.requestFullscreen || el.webkitRequestFullscreen).call(el); if (r && r.catch) r.catch(() => this.toast('Full screen unavailable')); }
-    } catch (e) { this.toast('Full screen unavailable'); }
-  }
+  toggleFullscreen() { this.app.fsSet(!this.app.fsActive()); }
   setView(v) {
     this.world.setMode(v);
     const a = $('v3d'), b = $('vmap');

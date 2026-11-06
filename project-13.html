@@ -197,7 +197,7 @@ function autoSlide() {
                 <a href="killweb/" class="project-detail-button" id="kwFull" target="_blank" rel="noopener">Play full size</a>
                 <span class="kw-addr" id="kwAddr">parth-patel.me/killweb</span>
             </div>
-            <p class="kw-hint">Plays in landscape with mouse, trackpad or touch. Right-click a hostile to engage, N skips to the next raid, Space pauses. On a phone, open the full-size version and turn the phone sideways. Progress saves in your browser.</p>
+            <p class="kw-hint">Plays in landscape with mouse, trackpad or touch. Right-click a hostile to engage (long-press on touch), N skips to the next raid, Space pauses. On a phone or tablet, Play opens the full-size game, which goes full screen on your first tap; iPhone Safari can't do that for web pages, so there Install app on the title screen adds it to the Home Screen instead. Progress saves in your browser.</p>
         </div>
 
         <div class="project-detail-content">
@@ -285,7 +285,14 @@ function autoSlide() {
     (function () {
         var btn = document.getElementById('kwPlay');
         var stage = document.getElementById('kwStage');
+        // Phones and tablets: a 16:9 box is too small to play, so Play opens the game page, which goes full screen on the first tap.
+        var touch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+        if (touch) {
+            btn.querySelector('span').innerHTML = '&#9654; Play';
+            btn.setAttribute('aria-label', 'Open Kill Web');
+        }
         btn.addEventListener('click', function () {
+            if (touch) { window.location.href = 'killweb/'; return; }
             var f = document.createElement('iframe');
             f.src = 'killweb/';
             f.title = 'Kill Web game';

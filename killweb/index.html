@@ -6,6 +6,12 @@
 <meta name="theme-color" content="#0b0f12">
 <meta name="description" content="Kill Web: an unofficial fan-made command game. Find, identify and engage across nine missions on the fictional Kestrel Coast.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230b0f12'/%3E%3Cg fill='none' stroke='%23e8edf1' stroke-width='1.6'%3E%3Ccircle cx='5' cy='5' r='2'/%3E%3Ccircle cx='19' cy='5' r='2'/%3E%3Ccircle cx='12' cy='12' r='2'/%3E%3Ccircle cx='5' cy='19' r='2'/%3E%3Ccircle cx='19' cy='19' r='2'/%3E%3Cpath d='M6.6 6.6 L10.4 10.4 M17.4 6.6 L13.6 10.4 M6.6 17.4 L10.4 13.6 M17.4 17.4 L13.6 13.6 M7 5 H17'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kill Web">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Kill Web</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -76,6 +82,8 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 2px s
 #title .foot { position: absolute; left: max(48px, env(safe-area-inset-left, 0px)); right: 24px; bottom: 22px; font-size: 12px; color: var(--fg3); line-height: 1.5; max-width: 70ch; }
 #title .foot .short { display: none; }
 #title .live { position: absolute; right: 28px; bottom: 22px; display: flex; gap: 10px; align-items: center; font-family: var(--mono); font-size: 11px; color: #b5c6d2; }
+#title .corner { position: absolute; top: max(20px, env(safe-area-inset-top, 0px)); right: max(24px, calc(env(safe-area-inset-right, 0px) + 8px)); display: flex; gap: 8px; }
+#title .corner .btn { height: 34px; padding: 0 12px 0 10px; gap: 8px; background: rgba(8,11,14,0.6); }
 .diff { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 .diff .btn { height: auto; padding: 9px 10px; flex-direction: column; align-items: flex-start; gap: 3px; white-space: normal; text-align: left; }
 .diff .btn span { font-weight: 500; font-size: 11.5px; letter-spacing: 0; line-height: 1.3; color: var(--fg2); }
@@ -203,11 +211,11 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 2px s
 .hud.l-open { --L: calc(var(--g) * 2 + var(--lw)); } .hud.r-open { --R: calc(var(--g) * 2 + var(--rw)); }
 .hud > * { pointer-events: auto; }
 .hud .topbar { height: var(--top); z-index: 6; gap: 14px; background: rgba(8,11,14,0.84); }
-.hud .brand { gap: 10px; flex: 0 1 auto; }
+.hud .brand { gap: 10px; flex: 0 1 auto; overflow: hidden; }
 .hud .brand .bt { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 .hud .brand .bm { display: none; font-family: var(--mono); font-weight: 600; font-size: 11.5px; padding: 3px 6px; border: 1px solid var(--line2); border-radius: 2px; color: var(--fg); }
 @media (max-width: 1300px) { .hud .brand .bt { display: none; } .hud .brand .bm { display: inline-block; } }
-@media (max-width: 900px) { .hud .brand .bm { display: none; } }
+@media (max-width: 1000px) { .hud .brand .bm { display: none; } }
 .clock { display: flex; align-items: center; gap: 8px; flex: none; }
 .clock .t { font-family: var(--mono); font-size: 15px; font-weight: 500; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; }
 .speeds { display: flex; gap: 3px; }
@@ -404,6 +412,8 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 2px s
 .dlg { width: min(520px, 100%); max-height: calc(100% - 32px); overflow-y: auto; padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; background: #0e1317; border: 1px solid rgba(255,255,255,0.14); border-radius: 4px; box-sizing: border-box; }
 .dlg h3 { margin: 0; font-weight: 700; font-size: 22px; letter-spacing: 0.05em; }
 .dlg p { margin: 0; font-size: 14px; line-height: 1.5; color: #d6dde2; }
+.dlg ol.steps { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.45; color: #d6dde2; }
+.dlg ol.steps b { color: var(--fg); }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .row.end { justify-content: flex-end; }
 .set { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
@@ -448,11 +458,13 @@ input[type=range] { accent-color: var(--amber); width: 150px; }
   #title .col { gap: 14px; } #title .menu .btn { height: 38px; } #title .tag { font-size: 14px; } #title .foot { bottom: 10px; font-size: 11px; line-height: 1.35; } #title .foot .long { display: none; } #title .foot .short { display: inline; }
   .topbar { height: 42px; } .cmp-body, .hg-body, .db-body, .brf-body { top: 42px; }
   .hg-center { overflow-y: auto; } .hg-center canvas.bp { position: relative; height: 220px; flex: none; } .hg-info { position: static; padding: 0 22px 16px; } .hg-head h2 { font-size: 26px; }
+  #title .corner { top: max(10px, env(safe-area-inset-top, 0px)); right: max(12px, calc(env(safe-area-inset-right, 0px) + 6px)); } #title .corner .btn { height: 30px; font-size: 12px; }
 }
 @media (max-height: 440px) { .hud .objp { display: none; } .rail .rb:last-child { display: none; } }
 /* landscape only */
 #rotate { display: none; position: fixed; inset: 0; z-index: 200; background: var(--bg); flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 24px; }
 #rotate p { margin: 0; max-width: 30ch; font-size: 15px; line-height: 1.45; color: #c3ccd3; }
+#rotate .btn { margin-top: 6px; }
 @media (orientation: portrait) and (max-width: 900px) { #rotate { display: flex; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
@@ -460,7 +472,7 @@ input[type=range] { accent-color: var(--amber); width: 150px; }
 <body>
 
 <div id="app">
-  <div id="rotate"><svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true" fill="none" stroke="#e8edf1" stroke-width="2"><rect x="22" y="8" width="20" height="36" rx="3"/><path d="M12 48 H48 A4 4 0 0 0 52 44 V40" stroke="#ffb547"/><path d="M48 36 L52 40 L56 36" stroke="#ffb547"/></svg><span class="lbl">TURN YOUR DEVICE SIDEWAYS</span><p>Kill Web plays in landscape. Rotate your phone or tablet to see the whole battlefield.</p></div>
+  <div id="rotate"><svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true" fill="none" stroke="#e8edf1" stroke-width="2"><rect x="22" y="8" width="20" height="36" rx="3"/><path d="M12 48 H48 A4 4 0 0 0 52 44 V40" stroke="#ffb547"/><path d="M48 36 L52 40 L56 36" stroke="#ffb547"/></svg><span class="lbl">TURN YOUR DEVICE SIDEWAYS</span><p>Kill Web plays in landscape. Rotate your phone or tablet to see the whole battlefield.</p><button class="btn primary big" type="button" id="rotFull" hidden>Play full screen</button></div>
   <!-- loading -->
   <div class="loading" id="boot"><svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="#e8edf1" stroke-width="1.6"><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M6.6 6.6 L10.4 10.4 M17.4 6.6 L13.6 10.4 M6.6 17.4 L10.4 13.6 M17.4 17.4 L13.6 13.6 M7 5 H17"/></svg><span class="lbl" id="bootMsg">Starting Kill Web</span><div class="bar"><i id="bootBar" style="width:8%"></i></div></div>
 
@@ -478,6 +490,7 @@ input[type=range] { accent-color: var(--amber); width: 150px; }
     </div>
     <div class="foot"><span class="long">Unofficial fan game. Not affiliated with, endorsed or sponsored by Anduril Industries or any other company. Units carry fictional codenames or public government designations and program names (such as FQ-44A and AGM-189A), never company product names; places, people and every performance value are fictional. No logos, imagery or company data are used, and hangar notes link to public reporting.</span><span class="short">Unofficial fan game, not affiliated with Anduril Industries or any other company. Names are codenames or public designations; all values are fictional.</span></div>
     <div class="live" id="titleLive"></div>
+    <div class="corner" id="titleCorner"></div>
   </section>
 
   <!-- campaign -->

@@ -1,6 +1,6 @@
 # Kill Web
 
-An unofficial fan-made command game in the browser: find tracks, identify them, pair the right shooter. Nine missions, five pace levels, full arsenal from the start. Plays in landscape on desktop, tablet and phone.
+An unofficial fan-made command game in the browser: find tracks, identify them, pair the right shooter. Nine missions, five pace levels, full arsenal from the start. Plays in landscape on desktop, tablet and phone. On phones and tablets it goes full screen on the first tap (switch it off in Settings); Install app on the title screen optionally adds it to the home screen.
 
 ## Legal
 

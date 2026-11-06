@@ -152,8 +152,9 @@ export const App = {
   store: new Store(), audio: new Audio(),
   profile: null, settings: null, screen: null,
   async boot() {
-    this.settings = Object.assign({ quality: 'auto', labels: true, autoSlow: true, speed: 4, music: true, vol: { master: 0.8, sfx: 0.9, amb: 0.5, music: 0.35 } }, this.store.loadSettings());
+    this.settings = Object.assign({ quality: 'auto', labels: true, autoSlow: true, speed: 4, music: true, fullscreen: true, vol: { master: 0.8, sfx: 0.9, amb: 0.5, music: 0.35 } }, this.store.loadSettings());
     this.audio.set(this.settings.vol);
+    this.fsInit();
     this.profile = await this.store.init((remote) => {
       // a newer cloud save arrived; take it unless a mission is running
       this.profile = remote;
@@ -190,6 +191,74 @@ export const App = {
     this.audio.start();
     if (this.settings.music && !this.musicOn) { this.audio.music(true, 'menu'); this.musicOn = 'menu'; }
   },
+  // ---------------- full screen and install
+  // Phones and tablets go full screen (landscape where the browser allows it) on the first tap, and again on the
+  // next tap after leaving it, until the player switches it off. iPhone Safari has no full screen for pages, so
+  // there the option is adding the game to the home screen. Nothing installs or prompts on its own.
+  fsInit() {
+    const d = document, mm = (q) => !!(window.matchMedia && matchMedia(q).matches);
+    this.touch = mm('(pointer: coarse)');
+    this.standalone = mm('(display-mode: fullscreen)') || mm('(display-mode: standalone)') || navigator.standalone === true;
+    this.fsOK = !!(d.fullscreenEnabled || d.webkitFullscreenEnabled);
+    this.ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    this.fsAuto = this.touch && this.fsOK && !this.standalone && window.top === window;
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); this.bip = e; this.fsSync(); });
+    window.addEventListener('appinstalled', () => { this.bip = null; this.installed = true; this.fsSync(); });
+    d.addEventListener('fullscreenchange', () => this.fsSync());
+    d.addEventListener('webkitfullscreenchange', () => this.fsSync());
+    $('rotFull').onclick = () => this.fsSet(true);
+    if (this.fsAuto) window.addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse' && this.settings.fullscreen !== false) this.fsEnter(); }, true);
+    this.fsSync();
+  },
+  fsActive() { const d = document; return !!(d.fullscreenElement || d.webkitFullscreenElement); },
+  fsEnter() {
+    if (this.fsActive() || Date.now() - (this.fsAt || 0) < 700) return;
+    this.fsAt = Date.now();
+    const el = document.documentElement;
+    const lock = () => { try { const p = screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape'); if (p && p.catch) p.catch(() => {}); } catch (e) { /* not offered */ } };
+    try {
+      const r = el.requestFullscreen ? el.requestFullscreen({ navigationUI: 'hide' }) : el.webkitRequestFullscreen && el.webkitRequestFullscreen();
+      if (r && r.then) r.then(lock, () => {}); else setTimeout(lock, 250);
+    } catch (e) { /* refused */ }
+  },
+  // the switch behind the title button, the settings row, the HUD button and the rotate screen
+  fsSet(on) {
+    if (this.touch) { this.settings.fullscreen = on; this.saveSettings(); }
+    if (on) { this.fsEnter(); return; }
+    const d = document;
+    if (this.fsActive()) try { const r = (d.exitFullscreen || d.webkitExitFullscreen).call(d); if (r && r.catch) r.catch(() => {}); } catch (e) { /* already out */ }
+  },
+  canInstall() { return this.touch && !this.standalone && !this.installed && window.top === window; },
+  fsSync() {
+    $('rotFull').hidden = !this.fsAuto || this.fsActive();
+    const c = $('titleCorner');
+    if (!c || this.screen !== 'title') return;
+    const full = this.fsActive();
+    const icoFull = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><path d="' + (full ? 'M5 1 V5 H1 M13 5 H9 V1 M9 13 V9 H13 M1 9 H5 V13' : 'M1 5 V1 H5 M9 1 H13 V5 M13 9 V13 H9 M5 13 H1 V9') + '"/></svg>';
+    const icoGet = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 1 V9 M3.5 5.5 L7 9 L10.5 5.5 M1 10 V13 H13 V10"/></svg>';
+    c.innerHTML = (this.fsOK && !this.standalone ? `<button class="btn" type="button" id="tFull">${icoFull}${full ? 'Exit full screen' : 'Full screen'}</button>` : '')
+      + (this.canInstall() ? `<button class="btn" type="button" id="tInstall">${icoGet}Install app</button>` : '');
+    if ($('tFull')) $('tFull').onclick = () => { this.startAudio(); this.audio.ui(); this.fsSet(!full); };
+    if ($('tInstall')) $('tInstall').onclick = () => { this.startAudio(); this.audio.ui(); this.installDlg(); };
+  },
+  async installDlg() {
+    if (this.bip) {
+      // the browser's own install dialog, shown only because the player asked for it
+      const e = this.bip; this.bip = null;
+      try { await e.prompt(); const c = await e.userChoice; if (c && c.outcome === 'accepted') this.installed = true; } catch (er) { /* dismissed */ }
+      this.fsSync();
+      return;
+    }
+    const phoneSafari = this.ios && !this.fsOK;
+    const steps = this.ios
+      ? ['Tap <b>Share</b> (on iOS 26, look under the <b>⋯</b> button).', 'Scroll down and tap <b>Add to Home Screen</b>.', 'Leave <b>Open as Web App</b> on, then tap <b>Add</b>.']
+      : ['Open the browser menu (<b>⋮</b> in Chrome).', 'Tap <b>Add to Home screen</b> or <b>Install app</b>, then <b>Install</b>.'];
+    this.modal(`<h3>Install Kill Web</h3>
+      <p>${phoneSafari ? 'Safari on iPhone keeps its bars on web pages. Opened from the home screen, Kill Web runs full screen instead.' : 'Opened from the home screen, Kill Web runs full screen in landscape, with no browser bars.'} Optional: the game plays the same in the browser.</p>
+      <ol class="steps">${steps.map((t) => `<li>${t}</li>`).join('')}</ol>
+      ${this.ios ? '<p class="dim" style="font-size:13px">The home screen app keeps its own save, separate from Safari.</p>' : ''}
+      <div class="row end"><button class="btn primary" type="button" data-close>Got it</button></div>`);
+  },
   title() {
     this.show('title');
     const p = this.profile;
@@ -208,6 +277,7 @@ export const App = {
     $('tNew').onclick = () => { this.startAudio(); this.audio.ui(); this.newCampaignDlg(); };
     $('tSettings').onclick = () => { this.startAudio(); this.audio.ui(); this.settingsDlg(); };
     $('tAbout').onclick = () => { this.startAudio(); this.audio.ui(); this.howToDlg(); };
+    this.fsSync();
   },
   // ---------------- dialogs
   modal(html, onOpen) {
@@ -218,7 +288,7 @@ export const App = {
     dl.querySelectorAll('[data-close]').forEach((b) => b.onclick = () => { this.audio.ui(); close(); });
     if (onOpen) onOpen(dl, close);
     const f = dl.querySelector('button.primary') || dl.querySelector('button');
-    if (f) setTimeout(() => f.focus(), 30);
+    if (f) setTimeout(() => f.focus({ preventScroll: true }), 30);
     return close;
   },
   confirm(title, text, yes, onYes, danger) {
@@ -251,6 +321,8 @@ export const App = {
       <div class="set"><div><div>Track labels</div><div class="d">Name boxes beside tracks and assets.</div></div><button class="btn sm ${s.labels ? 'on' : ''}" type="button" id="sLab">${s.labels ? 'ON' : 'OFF'}</button></div>
       <div class="set"><div><div>Slow down on contact</div><div class="d">Drops the game to 1x when a hostile is identified or a site takes fire.</div></div><button class="btn sm ${s.autoSlow ? 'on' : ''}" type="button" id="sSlow">${s.autoSlow ? 'ON' : 'OFF'}</button></div>
       <div class="set"><div><div>Music</div></div><button class="btn sm ${s.music ? 'on' : ''}" type="button" id="sMus">${s.music ? 'ON' : 'OFF'}</button></div>
+      ${this.fsAuto ? `<div class="set"><div><div>Full screen</div><div class="d">Goes full screen and landscape on your first tap, and again after you leave it.</div></div><button class="btn sm ${s.fullscreen !== false ? 'on' : ''}" type="button" id="sFull">${s.fullscreen !== false ? 'ON' : 'OFF'}</button></div>` : ''}
+      ${this.canInstall() ? '<div class="set"><div><div>Install app</div><div class="d">Optional. Adds Kill Web to your home screen, where it opens full screen with no browser bars.</div></div><button class="btn sm" type="button" id="sInst">HOW</button></div>' : ''}
       ${[['master', 'Volume'], ['sfx', 'Effects'], ['amb', 'Ambience'], ['music', 'Music level']].map(([k, n]) => `<div class="set"><label for="v_${k}">${n}</label><input type="range" id="v_${k}" min="0" max="100" value="${pct(s.vol[k])}"></div>`).join('')}
       ${inMission ? '' : `<div class="set"><div><div>Campaign</div><div class="d">Erase the saved campaign and start from the title screen.</div></div><button class="btn sm danger" type="button" id="sWipe" ${this.profile ? '' : 'disabled'}>RESET</button></div>`}
       <div class="row end"><button class="btn primary" type="button" data-close>Done</button></div>`, (dl, close) => {
@@ -259,6 +331,10 @@ export const App = {
       tog('#sLab', 'labels'); tog('#sSlow', 'autoSlow');
       tog('#sMus', 'music', () => { if (s.music) { this.audio.music(true, this.screen === 'mission' ? 'mission' : 'menu'); this.musicOn = 'on'; } else { this.audio.music(false); this.musicOn = null; } });
       for (const k of ['master', 'sfx', 'amb', 'music']) dl.querySelector('#v_' + k).oninput = (e) => { s.vol[k] = e.target.value / 100; this.saveSettings(); };
+      const fb = dl.querySelector('#sFull');
+      if (fb) fb.onclick = () => { const on = s.fullscreen === false; this.fsSet(on); fb.classList.toggle('on', on); fb.textContent = on ? 'ON' : 'OFF'; this.audio.ui(); };
+      const ib = dl.querySelector('#sInst');
+      if (ib) ib.onclick = () => { this.audio.ui(); close(); this.installDlg(); };
       const w = dl.querySelector('#sWipe');
       if (w) w.onclick = () => { close(); this.confirm('Reset the campaign?', 'Your commander, credits, upgrades and mission record will be erased. This cannot be undone.', 'Erase campaign', async () => { await this.store.wipe(); this.profile = null; this.title(); }, true); };
     });
