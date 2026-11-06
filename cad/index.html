@@ -29,11 +29,13 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--viewpo
 .seg button + button { border-left: 1px solid var(--line); }
 .seg button[aria-pressed="true"], .tool[aria-pressed="true"] { background: var(--accent); color: #fff; }
 .tool { border: 1px solid var(--line); border-radius: 4px; pointer-events: auto; }
-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.seg .amt { display: flex; align-items: center; padding: 0 10px; border-left: 1px solid var(--line); }
+.seg .amt input { width: 120px; margin: 0; accent-color: var(--accent); cursor: pointer; }
 .note { margin-left: auto; max-width: 52ch; text-align: right; font-size: 11.5px; line-height: 1.4; color: var(--muted); }
 .msg { position: fixed; inset: 0; display: grid; place-items: center; font: 13px var(--mono); color: var(--muted); text-align: center; padding: 24px; pointer-events: none; }
 body.embed .models { display: none; }
-@media (max-width: 680px) { .note { display: none; } .title .sub { display: none; } }
+@media (max-width: 680px) { .note { display: none; } .title .sub { display: none; } .seg .amt input { width: 84px; } }
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head>
@@ -52,6 +54,9 @@ body.embed .models { display: none; }
   </div>
   <button type="button" class="tool" id="edges" aria-pressed="true">Edges</button>
   <button type="button" class="tool" id="spin" aria-pressed="false">Spin</button>
+  <div class="seg" role="group" aria-label="Exploded view">
+    <button type="button" id="explode" aria-pressed="false" title="Exploded view (E)">Explode</button><label class="amt"><input type="range" id="exAmt" min="0" max="100" step="1" value="0" aria-label="Explode amount"></label>
+  </div>
   <span class="note">Drag to orbit, right-drag to pan, scroll to zoom. Exterior geometry only: internal parts, parts lists, masses and materials are not included. Not manufacturer data; unofficial, not affiliated with Anduril Industries.</span>
 </div>
 <script type="module">
@@ -59,9 +64,9 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const MODELS = {
-  'le-sr': { title: 'LE-SR tube-launched UAS study', basis: 'Representative exterior model of a publicly shown aircraft, flight configuration', dir: [0.75, 0.75, 1.0], k: 0.68 },
-  'fq-44a': { title: 'FQ-44A collaborative combat aircraft study', basis: 'Representative exterior model of a publicly shown aircraft, clean configuration', dir: [1.0, 0.42, 0.85], k: 0.62 },
-  'shade-x': { title: 'Shade-X quiet ISR helicopter concept', basis: 'Original home-built design', dir: [1.0, 0.38, 0.8], k: 0.6 },
+  'le-sr': { title: 'LE-SR tube-launched UAS study', basis: 'Representative exterior model of a publicly shown aircraft, flight configuration', dir: [0.75, 0.75, 1.0], k: 0.68, ex: 0.35 },
+  'fq-44a': { title: 'FQ-44A collaborative combat aircraft study', basis: 'Representative exterior model of a publicly shown aircraft, clean configuration', dir: [1.0, 0.42, 0.85], k: 0.62, ex: 0.35 },
+  'shade-x': { title: 'Shade-X quiet ISR helicopter concept', basis: 'Original home-built design', dir: [1.0, 0.38, 0.8], k: 0.6, ex: 0.35 },
 };
 const q = new URLSearchParams(location.search);
 const key = MODELS[q.get('m')] ? q.get('m') : 'le-sr';
@@ -111,28 +116,35 @@ try {
 
 const edgeMat = new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.32 });
 const edges = [];
-const m4 = new THREE.Matrix4();
+const meshes = [];
+const parts = []; // one entry per instance: where it sits at rest, in CAD coordinates
 let instances = 0;
 for (const md of data.meshes) {
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(decode(md.v, Float32Array), 3));
   geo.setIndex(new THREE.BufferAttribute(decode(md.i, Uint32Array), 1));
   geo.computeVertexNormals();
+  geo.computeBoundingBox();
   const glass = md.op < 1;
   const mat = new THREE.MeshStandardMaterial({ color: new THREE.Color(md.c), metalness: md.mt, roughness: md.ro, transparent: glass, opacity: md.op, depthWrite: !glass, side: THREE.DoubleSide });
   const mesh = new THREE.InstancedMesh(geo, mat, md.inst.length);
-  md.inst.forEach((e, i) => { m4.fromArray(e); mesh.setMatrixAt(i, m4); });
-  mesh.instanceMatrix.needsUpdate = true;
+  mesh.frustumCulled = false; // instances move apart in the exploded view
   if (glass) mesh.renderOrder = 2;
   world.add(mesh);
+  meshes.push(mesh);
   const eg = new THREE.EdgesGeometry(geo, 28);
-  for (const e of md.inst) {
+  md.inst.forEach((e, i) => {
+    const rest = new THREE.Matrix4().fromArray(e);
+    mesh.setMatrixAt(i, rest);
     const ls = new THREE.LineSegments(eg, edgeMat);
     ls.matrixAutoUpdate = false;
-    ls.matrix.fromArray(e);
+    ls.matrix.copy(rest);
     world.add(ls);
     edges.push(ls);
-  }
+    const b = geo.boundingBox.clone().applyMatrix4(rest);
+    parts.push({ mesh, i, ls, rest, box: b, c: b.getCenter(new THREE.Vector3()), size: b.getSize(new THREE.Vector3()).length() });
+  });
+  mesh.instanceMatrix.needsUpdate = true;
   instances += md.inst.length;
 }
 $('sub').textContent = `${M.basis} · ${data.meshes.length} parts, ${instances} instances shown`;
@@ -149,15 +161,69 @@ grid.material.opacity = 0.6;
 grid.position.set(ctr.x, box.min.y - radius * 0.005, ctr.z);
 scene.add(grid);
 
+// ---------------- exploded view
+// Each part moves out from the model centre along its own offset, scaled per axis by the model's half-extents so
+// thin directions open up as much as long ones. Small parts (fasteners, fittings) ride with the part they sit on.
+// Only the published exterior parts move; nothing is added.
+const cad = new THREE.Box3();
+for (const p of parts) cad.union(p.box);
+const C = cad.getCenter(new THREE.Vector3());
+const half = cad.getSize(new THREE.Vector3()).multiplyScalar(0.5);
+const hmax = Math.max(half.x, half.y, half.z);
+const hn = new THREE.Vector3(Math.max(half.x, hmax * 0.3), Math.max(half.y, hmax * 0.3), Math.max(half.z, hmax * 0.3));
+const diag = half.length() * 2;
+for (const p of parts) p.own = p.c.clone().sub(C).divide(hn).multiplyScalar(half.length() * M.ex);
+for (const p of parts) {
+  if (p.size > diag * 0.025) continue;
+  let best = Infinity;
+  for (const h of parts) {
+    if (h.size < p.size * 3 || h.size >= best) continue;
+    if (h.box.distanceToPoint(p.c) <= p.size * 0.5 + diag * 0.002) { best = h.size; p.host = h; }
+  }
+}
+const root = (p) => (p.host ? root(p.host) : p);
+for (const p of parts) p.d = root(p).own;
+let ex = 0, exAnim = null, frameCtr = ctr.clone(), frameR = radius;
+const T = new THREE.Matrix4(), M4 = new THREE.Matrix4(), bx = new THREE.Box3(), v3 = new THREE.Vector3();
+function applyExplode(f) {
+  ex = f;
+  for (const p of parts) {
+    M4.multiplyMatrices(T.makeTranslation(p.d.x * f, p.d.y * f, p.d.z * f), p.rest);
+    p.mesh.setMatrixAt(p.i, M4);
+    p.ls.matrix.copy(M4);
+  }
+  for (const m of meshes) m.instanceMatrix.needsUpdate = true;
+  // keep the model framed: follow the exploded centre and pull back in proportion to its size
+  const b = new THREE.Box3();
+  for (const p of parts) b.union(bx.copy(p.box).translate(v3.copy(p.d).multiplyScalar(f)));
+  b.applyMatrix4(world.matrixWorld);
+  const c2 = b.getCenter(new THREE.Vector3()), r2 = b.getSize(new THREE.Vector3()).length() / 2, k = r2 / frameR;
+  const off = camera.position.clone().sub(controls.target), pan = controls.target.clone().sub(frameCtr);
+  controls.target.copy(c2).addScaledVector(pan, k);
+  camera.position.copy(controls.target).addScaledVector(off, k);
+  if (anim) { anim.to.sub(frameCtr).multiplyScalar(k).add(c2); anim.tt.copy(c2); anim.from.copy(camera.position); anim.tf.copy(controls.target); }
+  camera.near *= k; camera.far *= k; camera.updateProjectionMatrix();
+  frameCtr = c2; frameR = r2;
+  grid.position.set(c2.x, b.min.y - r2 * 0.005, c2.z);
+  grid.scale.setScalar(r2 / radius);
+  $('exAmt').value = String(Math.round(f * 100));
+  $('explode').setAttribute('aria-pressed', String(f > 0.001 && (!exAnim || exAnim.to > 0)));
+  dirty = true;
+}
+function explodeTo(to) { exAnim = { from: ex, to, t0: performance.now(), dur: 700 + 500 * Math.abs(to - ex) }; $('explode').setAttribute('aria-pressed', String(to > 0)); }
+$('explode').addEventListener('click', () => explodeTo(exAnim ? (exAnim.to > 0 ? 0 : 1) : ex > 0.5 ? 0 : 1));
+$('exAmt').addEventListener('input', (e) => { exAnim = null; applyExplode(e.target.value / 100); });
+addEventListener('keydown', (e) => { if ((e.key === 'e' || e.key === 'E') && !e.metaKey && !e.ctrlKey && !e.altKey && e.target.tagName !== 'INPUT') $('explode').click(); });
+
 const VIEWS = { iso: M.dir, front: [1, 0.06, 0.0001], side: [0.0001, 0.06, 1], top: [0.0001, 1, 0.0002] };
 let anim = null, dirty = true;
 function goView(name, instant) {
   const d = new THREE.Vector3(...VIEWS[name]).normalize();
   const vf = THREE.MathUtils.degToRad(camera.fov) / 2;
   const hf = Math.atan(Math.tan(vf) * camera.aspect);
-  const dist = (radius / Math.sin(Math.min(vf, hf))) * (name === 'iso' ? M.k : 0.64);
+  const dist = (frameR / Math.sin(Math.min(vf, hf))) * (name === 'iso' ? M.k : 0.64);
   camera.near = dist / 200; camera.far = dist * 50; camera.updateProjectionMatrix();
-  anim = { from: camera.position.clone(), to: ctr.clone().addScaledVector(d, dist), tf: controls.target.clone(), tt: ctr.clone(), t0: performance.now(), dur: instant ? 0 : 450 };
+  anim = { from: camera.position.clone(), to: frameCtr.clone().addScaledVector(d, dist), tf: controls.target.clone(), tt: frameCtr.clone(), t0: performance.now(), dur: instant ? 0 : 450 };
   for (const b of document.querySelectorAll('[data-v]')) b.setAttribute('aria-pressed', String(b.dataset.v === name));
 }
 for (const b of document.querySelectorAll('[data-v]')) b.addEventListener('click', () => goView(b.dataset.v));
@@ -179,6 +245,13 @@ $('msg').remove();
 
 function frame(now) {
   requestAnimationFrame(frame);
+  if (exAnim) {
+    const u = Math.min(1, (now - exAnim.t0) / exAnim.dur);
+    const e = u * u * u * (u * (u * 6 - 15) + 10);
+    const to = exAnim.to, from = exAnim.from;
+    if (u >= 1) exAnim = null;
+    applyExplode(from + (to - from) * e);
+  }
   if (anim) {
     const u = anim.dur ? Math.min(1, (now - anim.t0) / anim.dur) : 1;
     const e = u * u * (3 - 2 * u);
@@ -193,7 +266,7 @@ function frame(now) {
   if (moved || dirty) { renderer.render(scene, camera); dirty = false; }
 }
 requestAnimationFrame(frame);
-window.__viewer = { ready: true, parts: data.meshes.length, instances, camera, controls, goView };
+window.__viewer = { ready: true, parts: data.meshes.length, instances, camera, controls, goView, explode: (f) => { exAnim = null; applyExplode(f); }, explodeTo, hosted: () => parts.filter((p) => p.host).length };
 </script>
 </body>
 </html>

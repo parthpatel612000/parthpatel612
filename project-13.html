@@ -235,9 +235,9 @@ function autoSlide() {
             </div>
             <div class="kw-actions">
                 <a href="cad/?m=le-sr" class="project-detail-button" id="cadFull" target="_blank" rel="noopener">Open full size</a>
-                <span class="kw-addr" id="cadInfo">LE-SR · 44 parts · 1.1 MB</span>
+                <span class="kw-addr" id="cadInfo">LE-SR · 43 parts · 1.1 MB</span>
             </div>
-            <p class="kw-hint">Drag to orbit, right-drag to pan, scroll to zoom; Iso, Front, Side and Top snap the camera. Exterior geometry only: parts that cannot be seen from outside, parts lists, masses and materials are removed from the data itself, and the FQ-44A is shown without stores.</p>
+            <p class="kw-hint">Drag to orbit, right-drag to pan, scroll to zoom; Iso, Front, Side and Top snap the camera, and Explode (or the E key) pulls the parts apart, with the slider setting how far. Exterior geometry only: parts that cannot be seen from outside, parts lists, masses and materials are removed from the data itself, so the exploded view separates the outer skins, surfaces and fittings, and the FQ-44A is shown without stores.</p>
         </div>
 
         <div class="project-detail-content">
@@ -306,9 +306,9 @@ function autoSlide() {
     // Interactive CAD: one viewer, three exterior-only models, loaded on request.
     (function () {
         var M = {
-            'le-sr': { img: 'images/cad-tube-uas.jpg', info: 'LE-SR · 44 parts · 1.1 MB' },
-            'fq-44a': { img: 'images/cad-cca.jpg', info: 'FQ-44A · 95 parts · 1.6 MB' },
-            'shade-x': { img: 'images/cad-helicopter.jpg', info: 'Shade-X · 93 parts · 4.2 MB' }
+            'le-sr': { img: 'images/cad-tube-uas.jpg', info: 'LE-SR · 43 parts · 1.1 MB' },
+            'fq-44a': { img: 'images/cad-cca.jpg', info: 'FQ-44A · 66 parts · 1.1 MB' },
+            'shade-x': { img: 'images/cad-helicopter.jpg', info: 'Shade-X · 89 parts · 4.1 MB' }
         };
         var cur = 'le-sr', frame = null;
         var stage = document.getElementById('cadStage');
