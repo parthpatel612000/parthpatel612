@@ -153,7 +153,7 @@
   const SCOUTS = new Set(['altius', 'ghost', 'omen', 'bolt', 'thunder']);
   const SEEKER = new Set(['b100', 'b500', 'a600m', 'a700m', 'boltm']);
   const ORBIT_R = { ghost: 0.7, altius: 2, omen: 3, thunder: 1.2, bolt: 0.5, fury: 3.5 };
-  const SHORT = { menace: 'MERIDIAN', sentry: 'VIGIL', nest: 'NEST', rrpad: 'CR PAD', tubes: 'ZENITH-L', bcl: 'MCL', pulsar: 'QUASAR', ghost: 'SHADE', team: 'PATCH', altius: 'ZENITH', bolt: 'JOLT', omen: 'AUGUR', thunder: 'TREMOR', fury: 'WRATH', truck: 'RELIEF' };
+  const SHORT = { menace: 'MERIDIAN', sentry: 'AST', nest: 'NEST', rrpad: 'CR PAD', tubes: 'ZENITH-L', bcl: 'MCL', pulsar: 'QUASAR', ghost: 'SHADE', team: 'PATCH', altius: 'LE-SR', bolt: 'JOLT', omen: 'AUGUR', thunder: 'TREMOR', fury: 'FQ-44A', truck: 'RELIEF' };
 
   // ---------------------------------------------------------------- the simulation
   class Sim {
@@ -289,7 +289,7 @@
     nameFor(type) {
       const n = (this.counters[type] = (this.counters[type] || 0) + 1);
       if (type === 'team') return n === 1 ? 'PATCH' : 'PATCH-' + n;
-      if (type === 'fury') return 'WRATH ' + (10 + n);
+      if (type === 'fury') return 'FQ-44A ' + (10 + n);
       if (type === 'menace') return 'MERIDIAN';
       return (SHORT[type] || type.toUpperCase()) + '-' + n;
     }
@@ -669,7 +669,7 @@
       if (det > 0) {
         if (!k.det) {
           if (!k.no) k.no = this.trkSeq++;
-          this.ev(k.known ? (k.aff === 'h' ? 'warn' : 'info') : 'info', 'TRELLIS', k.known ? `Track ${k.no} reacquired: ${e.T.name}.` : `New track ${k.no}: ${e.band === 0 ? 'ground' : 'air'}, ${this.bandWord(e.band)}, ${Math.round(e.vmax * 3600)} km/h.`, { kind: 'track', id: e.id });
+          this.ev(k.known ? (k.aff === 'h' ? 'warn' : 'info') : 'info', 'MESH', k.known ? `Track ${k.no} reacquired: ${e.T.name}.` : `New track ${k.no}: ${e.band === 0 ? 'ground' : 'air'}, ${this.bandWord(e.band)}, ${Math.round(e.vmax * 3600)} km/h.`, { kind: 'track', id: e.id });
         }
         k.det = true; k.esm = false; k.ls = this.t;
         k.ex = e.x; k.ey = e.y; k.evx = e.vx; k.evy = e.vy; k.unc = 0;
@@ -677,13 +677,13 @@
         k.dwell = (k.dwell || 0) + dt;
         if (!k.known && e.T.coop) {
           k.known = true; k.aff = 'n'; k.id = 1; this.stats.ids++;
-          this.ev('good', 'TRELLIS', `Track ${k.no} broadcasting ADS-B: ${e.T.label.toLowerCase()}. Identified NEUTRAL.`, { kind: 'id', id: e.id });
+          this.ev('good', 'MESH', `Track ${k.no} broadcasting ADS-B: ${e.T.label.toLowerCase()}. Identified NEUTRAL.`, { kind: 'id', id: e.id });
         } else if (!k.known && e.band >= 2 && e.T.speed >= 600 && k.dwell >= 6) {
           k.known = true; k.aff = e.side; k.id = 1; this.stats.ids++;
-          this.ev('bad', 'TRELLIS', `Track ${k.no}: no IFF reply, ${Math.round(e.vmax * 3600)} km/h at ${this.bandWord(e.band)} altitude, no flight plan. Classified HOSTILE.`, { kind: 'id', id: e.id });
+          this.ev('bad', 'MESH', `Track ${k.no}: no IFF reply, ${Math.round(e.vmax * 3600)} km/h at ${this.bandWord(e.band)} altitude, no flight plan. Classified HOSTILE.`, { kind: 'id', id: e.id });
         } else if (!k.known && e.band === 1 && e.T.speed >= 500 && k.dwell >= 1) {
           k.known = true; k.aff = e.side; k.id = 1; this.stats.ids++;
-          this.ev('bad', 'TRELLIS', `Track ${k.no} classified HOSTILE by flight profile: ${Math.round(e.vmax * 3600)} km/h at low altitude. Cruise missile.`, { kind: 'id', id: e.id });
+          this.ev('bad', 'MESH', `Track ${k.no} classified HOSTILE by flight profile: ${Math.round(e.vmax * 3600)} km/h at low altitude. Cruise missile.`, { kind: 'id', id: e.id });
         }
       } else if (esm) {
         if (!k.det) {
@@ -697,14 +697,14 @@
         k.det = true; k.esm = true; k.ls = this.t;
         k.ex = e.x + k.ox; k.ey = e.y + k.oy; k.evx = 0; k.evy = 0; k.unc = hyp(k.ox, k.oy) + 0.25;
         k.q = Math.min(0.35, Math.max(k.q, 0.2));
-        if (!k.known) { k.known = true; k.aff = 'h'; this.stats.ids++; this.ev('warn', 'TRELLIS', e.T.emitter ? `Track ${k.no} classified hostile by its emissions: ${e.T.name}.` : `Track ${k.no} classified hostile: launches traced to it.`, { kind: 'id', id: e.id }); }
+        if (!k.known) { k.known = true; k.aff = 'h'; this.stats.ids++; this.ev('warn', 'MESH', e.T.emitter ? `Track ${k.no} classified hostile by its emissions: ${e.T.name}.` : `Track ${k.no} classified hostile: launches traced to it.`, { kind: 'id', id: e.id }); }
       } else if (k.det) {
         const age = this.t - k.ls;
         // fixed sites don't move: once located, Lattice keeps the last fix
         if (!e.vmax && k.known && k.aff === 'h') { k.q = Math.max(0.2, k.q - 0.01 * dt); }
         else if (age > this.mods.coast) {
           k.det = false; k.q = 0;
-          if (k.known && k.aff === 'h') this.ev('info', 'TRELLIS', `Track ${k.no} dropped.`);
+          if (k.known && k.aff === 'h') this.ev('info', 'MESH', `Track ${k.no} dropped.`);
         } else {
           k.ex += k.evx * dt; k.ey += k.evy * dt;
           k.unc += hyp(k.evx, k.evy) * dt * 0.35 + 0.01 * dt;
@@ -716,7 +716,7 @@
         if (k.id >= 1) {
           k.known = true; k.aff = e.side;
           this.stats.ids++;
-          this.ev(e.side === 'h' ? 'warn' : 'good', 'TRELLIS', e.side === 'h' ? `Track ${k.no} identified HOSTILE: ${e.T.name}, ${e.T.label.toLowerCase()}.` : `Track ${k.no} identified NEUTRAL: ${e.T.label.toLowerCase()}. Hold fire.`, { kind: 'id', id: e.id });
+          this.ev(e.side === 'h' ? 'warn' : 'good', 'MESH', e.side === 'h' ? `Track ${k.no} identified HOSTILE: ${e.T.name}, ${e.T.label.toLowerCase()}.` : `Track ${k.no} identified NEUTRAL: ${e.T.label.toLowerCase()}. Hold fire.`, { kind: 'id', id: e.id });
         }
       }
     }
@@ -1038,7 +1038,7 @@
     }
 
     aiHeli(e, dt) {
-      if (e.hp < e.maxHp * 0.4 && !e.fleeing) { e.fleeing = true; if (e.trk && e.trk.det) this.ev('info', 'TRELLIS', `Track ${e.trk.no} is breaking off.`); }
+      if (e.hp < e.maxHp * 0.4 && !e.fleeing) { e.fleeing = true; if (e.trk && e.trk.det) this.ev('info', 'MESH', `Track ${e.trk.no} is breaking off.`); }
       if (e.fleeing) {
         if (this.moveToward(e, e.x < this.W / 2 ? -2 : this.W + 2, -2, e.vmax, dt) || e.y < -1.5) { e.alive = false; e.gone = true; }
         return;
@@ -1073,7 +1073,7 @@
           e.load.spears = 0;
           e.leaving = true;
           e.exit = [e.x < this.W / 2 ? -2 : this.W + 2, e.y < this.H / 2 ? -2 : e.y];
-          if (e.trk && e.trk.det) this.ev('bad', 'TRELLIS', `Track ${e.trk.no} released cruise missiles.`);
+          if (e.trk && e.trk.det) this.ev('bad', 'MESH', `Track ${e.trk.no} released cruise missiles.`);
         } else this.moveToward(e, g[0], g[1], e.vmax, dt);
       }
       if (e.cd <= 0 && e.load.eaam > 0) {
@@ -1094,7 +1094,7 @@
           e.pdCd = 2.5;
           if (this.rand() < e.T.pd) {
             s.dead = true; this.fxAdd('pop', s.x, s.y, { side: 'h', r: 0.12, band: 2 });
-            if (!e.pdMsg || this.t - e.pdMsg > 30) { e.pdMsg = this.t; this.ev('warn', 'TRELLIS', `Mothership point defense knocked down a ${s.W.name}. Salvo it.`); }
+            if (!e.pdMsg || this.t - e.pdMsg > 30) { e.pdMsg = this.t; this.ev('warn', 'MESH', `Mothership point defense knocked down a ${s.W.name}. Salvo it.`); }
           }
           break;
         }
@@ -1106,7 +1106,7 @@
       if (e.swarmT <= 0) {
         e.swarmT = 90;
         for (let i = 0; i < 6; i++) this.queue.push({ t: this.t + i * 3 / this.pace.er, at: [e.x, e.y], spec: { type: 'wasp', to: 'nearest', wave: true } });
-        if (e.trk && e.trk.det) this.ev('bad', 'TRELLIS', `Mothership launching a swarm. Six tracks.`);
+        if (e.trk && e.trk.det) this.ev('bad', 'MESH', `Mothership launching a swarm. Six tracks.`);
       }
       if (e.lanceT <= 0) {
         e.lanceT = 180;
@@ -1115,7 +1115,7 @@
       if (!e.escorted && e.hp < e.maxHp * 0.5) {
         e.escorted = true;
         for (let i = 0; i < 2; i++) this.spawnHostile('shrike', e.x, e.y, { to: { escort: e.tag || 'mother', r: 2.5 }, wave: true });
-        if (e.trk && e.trk.det) this.ev('bad', 'TRELLIS', 'Mothership launching escorts.');
+        if (e.trk && e.trk.det) this.ev('bad', 'MESH', 'Mothership launching escorts.');
       }
     }
 
@@ -1177,8 +1177,8 @@
       this.enemyFire(e, 'hrkt', tgt, { tx: tgt.x + Math.cos(a) * r, ty: tgt.y + Math.sin(a) * r });
       this.counterBattery(e, tgt);
       e.cd = e.T.cd * (0.85 + this.rand() * 0.3);
-      if (e.trk && e.trk.det) this.ev('bad', 'TRELLIS', `Track ${e.trk.no} fired a rocket salvo. Impact in ${KW.WT.hrkt.flight} s.`);
-      else this.ev('bad', 'TRELLIS', `Rocket salvo inbound from the ${this.compass(e.x - tgt.x, e.y - tgt.y)}. Impact in ${KW.WT.hrkt.flight} s.`);
+      if (e.trk && e.trk.det) this.ev('bad', 'MESH', `Track ${e.trk.no} fired a rocket salvo. Impact in ${KW.WT.hrkt.flight} s.`);
+      else this.ev('bad', 'MESH', `Rocket salvo inbound from the ${this.compass(e.x - tgt.x, e.y - tgt.y)}. Impact in ${KW.WT.hrkt.flight} s.`);
     }
     // a launch seen by friendly air-search radar gives away a point of origin: a fix, not an identification by camera
     backtrack(e, what) {
@@ -1193,7 +1193,7 @@
       if (!k.det || k.esm) {
         k.det = true; k.esm = true; k.ls = this.t; k.ex = e.x + k.ox; k.ey = e.y + k.oy; k.unc = m + 0.25; k.q = 0.25;
         if (!k.known) { k.known = true; k.aff = 'h'; }
-        this.ev('warn', 'TRELLIS', `${what}: track ${k.no}, fix within ${(m + 0.25).toFixed(1)} km.`, { kind: 'track', id: e.id });
+        this.ev('warn', 'MESH', `${what}: track ${k.no}, fix within ${(m + 0.25).toFixed(1)} km.`, { kind: 'track', id: e.id });
       }
     }
     // counter-battery: friendly radar near the impact area tracks the salvo back to an estimated launch point
@@ -1209,7 +1209,7 @@
       if (!k.det || k.esm) {
         k.det = true; k.esm = true; k.ls = this.t; k.ex = e.x + k.ox; k.ey = e.y + k.oy; k.unc = m + 0.25; k.q = 0.25;
         if (!k.known) { k.known = true; k.aff = 'h'; }
-        this.ev('warn', 'TRELLIS', `Counter-battery: salvo tracked back to a launch point, track ${k.no}, fix within ${(m + 0.25).toFixed(1)} km.`, { kind: 'track', id: e.id });
+        this.ev('warn', 'MESH', `Counter-battery: salvo tracked back to a launch point, track ${k.no}, fix within ${(m + 0.25).toFixed(1)} km.`, { kind: 'track', id: e.id });
       }
     }
     compass(dx, dy) { const a = (Math.atan2(dx, -dy) * 180 / Math.PI + 360) % 360; return ['north', 'northeast', 'east', 'southeast', 'south', 'southwest', 'west', 'northwest'][Math.round(a / 45) % 8]; }
@@ -1469,7 +1469,7 @@
     resolveHit(s, tgt) {
       const hit = this.rand() < s.pk;
       if (s.tgtShot) {
-        if (hit) { tgt.dead = true; this.fxAdd('pop', tgt.x, tgt.y, { side: 'f', r: 0.2, band: 1 }); this.ev('bad', 'TRELLIS', `${tgt.W.name} shot down by enemy air defense.`); }
+        if (hit) { tgt.dead = true; this.fxAdd('pop', tgt.x, tgt.y, { side: 'f', r: 0.2, band: 1 }); this.ev('bad', 'MESH', `${tgt.W.name} shot down by enemy air defense.`); }
         s.dead = true;
         return;
       }
@@ -1572,10 +1572,10 @@
           this.stats.kills++; this.stats.killValue += e.T.value || 0;
           this.stats.killsType[e.type] = (this.stats.killsType[e.type] || 0) + 1;
           if (src.prod) this.stats.prodXP[src.prod] = (this.stats.prodXP[src.prod] || 0) + 1;
-          this.ev('good', src.W ? src.W.name.toUpperCase() : 'TRELLIS', `Splash. ${e.T.name}${e.trk && e.trk.no ? `, track ${e.trk.no}` : ''}, destroyed.`, { kind: 'kill', id: e.id });
+          this.ev('good', src.W ? src.W.name.toUpperCase() : 'MESH', `Splash. ${e.T.name}${e.trk && e.trk.no ? `, track ${e.trk.no}` : ''}, destroyed.`, { kind: 'kill', id: e.id });
         }
       } else if (e.side === 'n') {
-        if (by === 'f') { this.stats.harm++; this.ev('bad', 'TRELLIS', `Civilian ${e.T.label.toLowerCase()} destroyed by friendly fire.`, { kind: 'harm' }); }
+        if (by === 'f') { this.stats.harm++; this.ev('bad', 'MESH', `Civilian ${e.T.label.toLowerCase()} destroyed by friendly fire.`, { kind: 'harm' }); }
       } else {
         if (e.type === 'fury') this.furyCd = 120;
         this.stats.lost.push(e.name);
@@ -1813,7 +1813,7 @@
         if (o.state === 'holding') o.state = win ? 'done' : 'failed';
       }
       this.outcome = { win, reason, t: this.t };
-      this.ev(win ? 'good' : 'bad', 'TRELLIS', win ? 'All primary objectives complete.' : `Mission failed: ${reason}.`, { kind: 'end' });
+      this.ev(win ? 'good' : 'bad', 'MESH', win ? 'All primary objectives complete.' : `Mission failed: ${reason}.`, { kind: 'end' });
     }
 
     // ---------------- commands
@@ -1850,7 +1850,7 @@
       this.ev('info', u.name, on ? 'Jamming.' : 'Jammer off.');
       return null;
     }
-    cmdEW(u, on) { if (!u || u.type !== 'altius') return 'Not a Zenith-6.'; u.ewOn = on; this.ev('info', u.name, on ? 'EW payload on. Sensors degraded while jamming.' : 'EW payload off.'); return null; }
+    cmdEW(u, on) { if (!u || u.type !== 'altius') return 'Not an LE-SR.'; u.ewOn = on; this.ev('info', u.name, on ? 'EW payload on. Sensors degraded while jamming.' : 'EW payload off.'); return null; }
     padFree(pad) { const u = pad && pad.unit ? this.byId(pad.unit) : null; return !!pad && !(u && u.alive); }
     cmdBuild(pad) {
       if (!this.padFree(pad)) return 'Pad occupied.';
@@ -1913,16 +1913,16 @@
     }
     // one Fury: air-to-air missiles and two Barracuda-500M, fights anything identified inside its patrol area
     cmdFury(x, y) {
-      if (this.ents.some((f) => f.alive && f.type === 'fury')) return 'Wrath is already up.';
-      if (this.furyCd > 0) return `Wrath ready in ${Math.ceil(this.furyCd)} s.`;
+      if (this.ents.some((f) => f.alive && f.type === 'fury')) return 'FQ-44A is already up.';
+      if (this.furyCd > 0) return `FQ-44A ready in ${Math.ceil(this.furyCd)} s.`;
       const c = this.costOf('fury');
       if (this.supply < c) return `Needs ${c} supply.`;
       this.supply -= c;
-      const f = this.addUnit('fury', -0.8, this.H * 0.85, { name: 'WRATH' });
+      const f = this.addUnit('fury', -0.8, this.H * 0.85, { name: 'FQ-44A' });
       f.station = f.T.station;
       f.mv = { mode: 'goto', tx: clamp(x, 1, this.W - 1), ty: clamp(y, 1, this.H - 1), r: ORBIT_R.fury };
       f.cap = [f.mv.tx, f.mv.ty]; f.capR = ORBIT_R.fury;
-      this.ev('info', 'WRATH', 'Airborne.', { kind: 'launch' });
+      this.ev('info', 'FQ-44A', 'Airborne.', { kind: 'launch' });
       return null;
     }
     // Thunder flies to the point and works over everything identified within 6 km, then rearms
@@ -2001,13 +2001,13 @@
     setAutonomy(m) {
       if (m === 'auto' && !this.mods.fullAuto) return 'AUTONOMOUS needs the Full Autonomy skill.';
       this.autonomy = m;
-      this.ev('info', 'TRELLIS', m === 'manual' ? 'Autonomy MANUAL: nothing fires until you pair it.' : m === 'supervised' ? 'Autonomy SUPERVISED: defenses engage identified hostiles on their own.' : 'Autonomy AUTONOMOUS: defenses, strikes and scouting run on their own.');
+      this.ev('info', 'MESH', m === 'manual' ? 'Autonomy MANUAL: nothing fires until you pair it.' : m === 'supervised' ? 'Autonomy SUPERVISED: defenses engage identified hostiles on their own.' : 'Autonomy AUTONOMOUS: defenses, strikes and scouting run on their own.');
       return null;
     }
     cmdHold(e, on) {
       if (!e || e.side === 'f') return 'Pick a track.';
       e.hold = !!on;
-      this.ev('info', 'TRELLIS', on ? `Holding fire on track ${e.trk ? e.trk.no : '?'}. Autonomy will leave it alone.` : `Track ${e.trk ? e.trk.no : '?'} released to autonomy.`);
+      this.ev('info', 'MESH', on ? `Holding fire on track ${e.trk ? e.trk.no : '?'}. Autonomy will leave it alone.` : `Track ${e.trk ? e.trk.no : '?'} released to autonomy.`);
       return null;
     }
     setROE(r) { this.roe = r; this.ev(r === 'free' ? 'warn' : 'info', 'REYES', r === 'free' ? 'Weapons free noted. You can pair on unknown tracks. You own every result.' : 'Weapons tight. Identified hostiles only.'); return null; }

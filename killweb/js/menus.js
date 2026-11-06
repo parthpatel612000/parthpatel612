@@ -26,9 +26,9 @@ function castLine(who, text) {
 function prodStats(P) {
   const out = [];
   const T = P.unit ? KW.UT[P.unit] : null;
-  if (P.id === 'wisp') return [['TYPE', 'Passive IR'], ['FITS', 'Vigil, Shade-X'], ['ID SPEED', '+15 to 30%'], ['EMITS', 'Nothing'], ['NIGHT', 'Full sight']];
+  if (P.id === 'wisp') return [['TYPE', 'Passive IR'], ['FITS', 'AST, Shade-X'], ['ID SPEED', '+15 to 30%'], ['EMITS', 'Nothing'], ['NIGHT', 'Full sight']];
   if (P.id === 'srm') return [['FITS', 'Rocket shots'], ['SPEED', 'Faster'], ['MK II', '+20% range'], ['MK III', '+6% hit'], ['COST', `${P.buy} cr`]];
-  if (P.id === 'bolt') { const W = KW.WT.boltm; return [['RECON', 'Jolt quad'], ['STRIKE', 'Jolt-M'], ['RANGE', `${W.range} km`], ['ROUNDS', `${KW.UT.team.stock}`], ['BATTERY', '10 min']]; }
+  if (P.id === 'bolt') { const W = KW.WT.boltm; return [['RECON', 'Jolt quad'], ['STRIKE', 'OPF-L'], ['RANGE', `${W.range} km`], ['ROUNDS', `${KW.UT.team.stock}`], ['BATTERY', '10 min']]; }
   if (!T) return out;
   out.push(['HULL', String(T.hp)]);
   if (T.speed) out.push(['SPEED', `${fmtN(T.speed)} km/h`]);
@@ -154,7 +154,7 @@ export class Menus {
       h += `<section class="panel card next"><span class="lbl" style="color:var(--n)">CAMPAIGN COMPLETE</span><h2>${esc(e.title.toUpperCase())}</h2><span class="quote">${esc(e.text)}</span><span class="dim" style="font-size:12.5px">Pick any mission on the map to replay it.</span></section>`;
     }
     // skills
-    h += `<section class="panel card" aria-label="Trellis skills"><div style="display:flex;justify-content:space-between;align-items:baseline"><span class="lbl">TRELLIS SKILLS</span><span class="mono" style="font-size:11px;color:${p.sp ? 'var(--amber)' : 'var(--fg3)'}">${p.sp} point${p.sp === 1 ? '' : 's'} to spend</span></div><div class="skills">`;
+    h += `<section class="panel card" aria-label="Mesh skills"><div style="display:flex;justify-content:space-between;align-items:baseline"><span class="lbl">MESH SKILLS</span><span class="mono" style="font-size:11px;color:${p.sp ? 'var(--amber)' : 'var(--fg3)'}">${p.sp} point${p.sp === 1 ? '' : 's'} to spend</span></div><div class="skills">`;
     for (const b of KW.BRANCHES) {
       h += `<div class="col"><span class="lbl" style="font-size:10px">${esc(b.name)}</span>`;
       for (const s of KW.SKILLS.filter((k) => k.br === b.id)) {
@@ -258,7 +258,7 @@ export class Menus {
     let h = `<div style="display:flex;justify-content:space-between;align-items:baseline"><span class="lbl">LOADOUT</span><span class="mono" style="font-size:11.5px;color:${used > cap ? 'var(--h)' : 'var(--fg2)'}">mesh capacity ${used} / ${cap}</span></div>
       <div class="cap">${Array.from({ length: cap }, (_, k) => `<i class="${k < used ? 'on' : ''}"></i>`).join('')}</div>
       <div class="plist"><div class="prod in" style="cursor:default">${icon('menace')}<div><div class="nm">Meridian</div><div class="sb">Command node, always deployed</div></div><span class="cost">FREE</span></div>
-      <div class="prod in" style="cursor:default">${icon('sentry')}<div><div class="nm">Vigil towers</div><div class="sb">${(def.pre || []).length} up · build more on ${def.pads.length} pads for 25 supply</div></div><span class="cost">FREE</span></div>`;
+      <div class="prod in" style="cursor:default">${icon('sentry')}<div><div class="nm">AST towers</div><div class="sb">${(def.pre || []).length} up · build more on ${def.pads.length} pads for 25 supply</div></div><span class="cost">FREE</span></div>`;
     for (const P of Rules.loadoutProducts()) {
       const av = Rules.available(p, P.id), on = this.loadout.includes(P.id), fz = forced.has(P.id);
       const fits = on || used + P.slot <= cap;
@@ -420,7 +420,7 @@ export class Menus {
       let take = null;
       if (e.kind === 'end') take = [e.t, t, e.cat === 'good' ? '#c6efc6' : '#ffb3ab'];
       else if (/destroyed/.test(t) && /(MOTHERSHIP|HYDRA|SPIRE|LAUNCH SITE|C2 POST|STATIC|SCYTHE|SHRIKE|TALON|BASTION)/.test(t)) take = [e.t, t.replace(/^Splash\. /, ''), '#ffcf85'];
-      else if (e.cat === 'bad' && /(lost|destroyed|down|failed|damaged)/i.test(t) && e.who !== 'TRELLIS') take = [e.t, `${e.who}: ${t}`, '#ffb3ab'];
+      else if (e.cat === 'bad' && /(lost|destroyed|down|failed|damaged)/i.test(t) && e.who !== 'MESH') take = [e.t, `${e.who}: ${t}`, '#ffb3ab'];
       else if (/identified HOSTILE: (MOTHERSHIP|SCYTHE|SHRIKE|TALON|HYDRA|SPIRE|BASTION|STATIC|C2 POST|LAUNCH SITE)/.test(t)) take = [e.t, t, null];
       else if (/arrived|arrives/i.test(t) && /truck|Haven/i.test(t)) take = [e.t, t, '#c6efc6'];
       if (!take) continue;
@@ -450,7 +450,7 @@ export class Menus {
     const rk = (extra.shots && extra.shots.srm) || 0;
     if (rk) rows.push({ name: 'Rockets', used: rk, def: (sim.stats.prodXP && sim.stats.prodXP.srm) || 0, ver: '', note: '' });
     const sentries = sim.ents.filter((e) => e.side === 'f' && e.type === 'sentry');
-    rows.push({ name: 'Vigil towers', used: sentries.length, def: 0, ver: Rules.version(p.model.sentry), note: `${sim.stats.built || 0} built this mission` });
+    rows.push({ name: 'AST towers', used: sentries.length, def: 0, ver: Rules.version(p.model.sentry), note: `${sim.stats.built || 0} built this mission` });
     return rows;
   }
   drawAfterMap(def, sim, extra) {

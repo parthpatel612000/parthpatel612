@@ -268,7 +268,7 @@ export const App = {
       <div class="howto">
         <span><b>Red</b> is hostile, <b>yellow</b> unknown, <b>green</b> civilian. Only identified hostiles can be engaged.</span>
         <span><b>Right-click</b> a hostile (long-press on touch): the best shooter engages.</span>
-        <span><b>Bottom bar</b>: each deployment shows its supply cost. Vigil, Zenith, Wrath, Tremor, Rockets, Jolt, Jam.</span>
+        <span><b>Bottom bar</b>: each deployment shows its supply cost. AST, Zenith, FQ-44A, Tremor, Rockets, Jolt, Jam.</span>
         <span><b>AUTO</b> speed runs fast when quiet. <b>NEXT RAID</b> (N) skips ahead.</span>
         <span><b>Pace 1 to 5</b> on the briefing: faster enemies and faster deployment, more rewards.</span>
         <span><b>Keys</b>: Space pause · M map · Tab next hostile · F follow · R engage selected.</span>

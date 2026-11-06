@@ -514,9 +514,9 @@ export function unitStatus(sim, e) {
     case 'tubes': parts.push(`Tubes ${e.stock}/${e.maxStock}`); break;
     case 'bcl': parts.push(`Moray ${e.stock}/${e.maxStock}`); break;
     case 'pulsar': parts.push(e.jamOn ? `Jamming · ${Math.round(100 * e.energy / e.maxEnergy)}%` : e.cool > 0 ? 'Cooling' : `Listening · ${Math.round(100 * e.energy / e.maxEnergy)}%`); break;
-    case 'team': parts.push(`Jolt-M ${e.stock}/${e.maxStock}`); break;
+    case 'team': parts.push(`OPF-L ${e.stock}/${e.maxStock}`); break;
     case 'thunder': parts.push(`RKT ${e.ammo.rkt} · BCL ${e.ammo.b100} · CI ${e.ammo.ci}`); break;
-    case 'fury': parts.push(`AAM ${e.ammo.aam}${e.ammo.b500 != null ? ' · Moray-5 ' + e.ammo.b500 : ''}`); break;
+    case 'fury': parts.push(`AAM ${e.ammo.aam}${e.ammo.b500 != null ? ' · AGM-189A ' + e.ammo.b500 : ''}`); break;
     case 'altius': parts.push(e.ewOn ? 'EW on' : 'ISR · relay'); break;
     case 'omen': parts.push('Radar · relay'); break;
     case 'bolt': parts.push(`Battery ${Math.max(0, Math.ceil((e.life || 0) / 60))} min`); break;

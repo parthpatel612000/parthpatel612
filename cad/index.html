@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CAD Studies Viewer - Parth Patel</title>
+<meta name="description" content="Exterior-only interactive CAD models from the Kill Web and Autonomous Systems CAD Studies project. Unofficial fan project, not affiliated with Anduril Industries.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --panel: #f6f7f8; --fg: #1a2027; --muted: #5d6873; --line: #cfd5da; --accent: #0a6d95;
+  --viewport: #dfe3e6; --grid: #b9c1c7;
+  --display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--viewport); color: var(--fg); font: 14px/1.45 var(--body); }
+#stage { position: fixed; inset: 0; }
+#stage canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.top { position: fixed; left: max(14px, env(safe-area-inset-left)); right: max(14px, env(safe-area-inset-right)); top: 12px; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: flex-start; justify-content: space-between; pointer-events: none; }
+.title h1 { font: 600 19px/1.15 var(--display); margin: 0; letter-spacing: 0.01em; }
+.title .sub { font-size: 12.5px; color: var(--muted); margin-top: 3px; max-width: 62ch; }
+.bar { position: fixed; left: max(12px, env(safe-area-inset-left)); right: max(12px, env(safe-area-inset-right)); bottom: max(12px, env(safe-area-inset-bottom)); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; pointer-events: none; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: var(--panel); pointer-events: auto; }
+.seg button, .tool { font: 500 12px/1 var(--body); color: var(--fg); background: var(--panel); border: 0; padding: 8px 10px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"], .tool[aria-pressed="true"] { background: var(--accent); color: #fff; }
+.tool { border: 1px solid var(--line); border-radius: 4px; pointer-events: auto; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.note { margin-left: auto; max-width: 52ch; text-align: right; font-size: 11.5px; line-height: 1.4; color: var(--muted); }
+.msg { position: fixed; inset: 0; display: grid; place-items: center; font: 13px var(--mono); color: var(--muted); text-align: center; padding: 24px; pointer-events: none; }
+body.embed .models { display: none; }
+@media (max-width: 680px) { .note { display: none; } .title .sub { display: none; } }
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head>
+<body>
+<div id="stage" role="img" aria-label="Interactive 3D CAD model"></div>
+<div class="msg" id="msg">Loading model</div>
+<div class="top">
+  <div class="title"><h1 id="ttl">CAD study</h1><div class="sub" id="sub"></div></div>
+  <div class="seg models" role="group" aria-label="Model">
+    <button type="button" data-m="le-sr">LE-SR</button><button type="button" data-m="fq-44a">FQ-44A</button><button type="button" data-m="shade-x">Shade-X</button>
+  </div>
+</div>
+<div class="bar">
+  <div class="seg" role="group" aria-label="View">
+    <button type="button" data-v="iso" aria-pressed="true">Iso</button><button type="button" data-v="front" aria-pressed="false">Front</button><button type="button" data-v="side" aria-pressed="false">Side</button><button type="button" data-v="top" aria-pressed="false">Top</button>
+  </div>
+  <button type="button" class="tool" id="edges" aria-pressed="true">Edges</button>
+  <button type="button" class="tool" id="spin" aria-pressed="false">Spin</button>
+  <span class="note">Drag to orbit, right-drag to pan, scroll to zoom. Exterior geometry only: internal parts, parts lists, masses and materials are not included. Not manufacturer data; unofficial, not affiliated with Anduril Industries.</span>
+</div>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const MODELS = {
+  'le-sr': { title: 'LE-SR tube-launched UAS study', basis: 'Representative exterior model of a publicly shown aircraft, flight configuration', dir: [0.75, 0.75, 1.0], k: 0.68 },
+  'fq-44a': { title: 'FQ-44A collaborative combat aircraft study', basis: 'Representative exterior model of a publicly shown aircraft, clean configuration', dir: [1.0, 0.42, 0.85], k: 0.62 },
+  'shade-x': { title: 'Shade-X quiet ISR helicopter concept', basis: 'Original home-built design', dir: [1.0, 0.38, 0.8], k: 0.6 },
+};
+const q = new URLSearchParams(location.search);
+const key = MODELS[q.get('m')] ? q.get('m') : 'le-sr';
+const M = MODELS[key];
+if (q.get('embed') === '1') document.body.classList.add('embed');
+const $ = (id) => document.getElementById(id);
+$('ttl').textContent = M.title;
+document.title = M.title + ' - Parth Patel';
+for (const b of document.querySelectorAll('[data-m]')) {
+  b.setAttribute('aria-pressed', String(b.dataset.m === key));
+  b.addEventListener('click', () => { if (b.dataset.m !== key) location.search = '?m=' + b.dataset.m; });
+}
+
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const stage = $('stage');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ antialias: true }); } catch (e) { $('msg').textContent = 'This viewer needs WebGL, which this browser has turned off.'; throw e; }
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+stage.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(css('--viewport'));
+const camera = new THREE.PerspectiveCamera(30, 1, 1, 100000);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.12;
+controls.autoRotateSpeed = 1.1;
+const world = new THREE.Group();
+world.rotation.x = -Math.PI / 2; // CAD Z-up to three.js Y-up
+scene.add(world);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x6b7680, 1.25));
+const keyLight = new THREE.DirectionalLight(0xffffff, 1.6); keyLight.position.set(5000, 8000, 6000); scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xffffff, 0.55); fillLight.position.set(-6000, 3000, -4000); scene.add(fillLight);
+
+function decode(b64, Type) {
+  const bin = atob(b64);
+  const u8 = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  return new Type(u8.buffer);
+}
+
+let data;
+try {
+  const res = await fetch(`data/${key}.json`);
+  if (!res.ok) throw new Error(res.status);
+  data = await res.json();
+} catch (e) { $('msg').textContent = 'The model could not be loaded. Try reloading the page.'; throw e; }
+
+const edgeMat = new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.32 });
+const edges = [];
+const m4 = new THREE.Matrix4();
+let instances = 0;
+for (const md of data.meshes) {
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(decode(md.v, Float32Array), 3));
+  geo.setIndex(new THREE.BufferAttribute(decode(md.i, Uint32Array), 1));
+  geo.computeVertexNormals();
+  const glass = md.op < 1;
+  const mat = new THREE.MeshStandardMaterial({ color: new THREE.Color(md.c), metalness: md.mt, roughness: md.ro, transparent: glass, opacity: md.op, depthWrite: !glass, side: THREE.DoubleSide });
+  const mesh = new THREE.InstancedMesh(geo, mat, md.inst.length);
+  md.inst.forEach((e, i) => { m4.fromArray(e); mesh.setMatrixAt(i, m4); });
+  mesh.instanceMatrix.needsUpdate = true;
+  if (glass) mesh.renderOrder = 2;
+  world.add(mesh);
+  const eg = new THREE.EdgesGeometry(geo, 28);
+  for (const e of md.inst) {
+    const ls = new THREE.LineSegments(eg, edgeMat);
+    ls.matrixAutoUpdate = false;
+    ls.matrix.fromArray(e);
+    world.add(ls);
+    edges.push(ls);
+  }
+  instances += md.inst.length;
+}
+$('sub').textContent = `${M.basis} · ${data.meshes.length} parts, ${instances} instances shown`;
+world.updateMatrixWorld(true);
+const box = new THREE.Box3().setFromObject(world);
+const ctr = box.getCenter(new THREE.Vector3());
+const radius = box.getSize(new THREE.Vector3()).length() / 2;
+
+const gridColor = new THREE.Color(css('--grid'));
+const span = Math.max(box.max.x - box.min.x, box.max.z - box.min.z) * 1.8;
+const grid = new THREE.GridHelper(span, 24, gridColor, gridColor);
+grid.material.transparent = true;
+grid.material.opacity = 0.6;
+grid.position.set(ctr.x, box.min.y - radius * 0.005, ctr.z);
+scene.add(grid);
+
+const VIEWS = { iso: M.dir, front: [1, 0.06, 0.0001], side: [0.0001, 0.06, 1], top: [0.0001, 1, 0.0002] };
+let anim = null, dirty = true;
+function goView(name, instant) {
+  const d = new THREE.Vector3(...VIEWS[name]).normalize();
+  const vf = THREE.MathUtils.degToRad(camera.fov) / 2;
+  const hf = Math.atan(Math.tan(vf) * camera.aspect);
+  const dist = (radius / Math.sin(Math.min(vf, hf))) * (name === 'iso' ? M.k : 0.64);
+  camera.near = dist / 200; camera.far = dist * 50; camera.updateProjectionMatrix();
+  anim = { from: camera.position.clone(), to: ctr.clone().addScaledVector(d, dist), tf: controls.target.clone(), tt: ctr.clone(), t0: performance.now(), dur: instant ? 0 : 450 };
+  for (const b of document.querySelectorAll('[data-v]')) b.setAttribute('aria-pressed', String(b.dataset.v === name));
+}
+for (const b of document.querySelectorAll('[data-v]')) b.addEventListener('click', () => goView(b.dataset.v));
+$('edges').addEventListener('click', (e) => { const on = e.currentTarget.getAttribute('aria-pressed') !== 'true'; e.currentTarget.setAttribute('aria-pressed', String(on)); for (const ls of edges) ls.visible = on; dirty = true; });
+$('spin').addEventListener('click', (e) => { controls.autoRotate = !controls.autoRotate; e.currentTarget.setAttribute('aria-pressed', String(controls.autoRotate)); });
+controls.addEventListener('change', () => { dirty = true; });
+
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / Math.max(1, h);
+  camera.updateProjectionMatrix();
+  dirty = true;
+}
+new ResizeObserver(resize).observe(stage);
+resize();
+goView('iso', true);
+$('msg').remove();
+
+function frame(now) {
+  requestAnimationFrame(frame);
+  if (anim) {
+    const u = anim.dur ? Math.min(1, (now - anim.t0) / anim.dur) : 1;
+    const e = u * u * (3 - 2 * u);
+    camera.position.lerpVectors(anim.from, anim.to, e);
+    controls.target.lerpVectors(anim.tf, anim.tt, e);
+    if (u >= 1) anim = null;
+    dirty = true;
+  }
+  const moved = controls.update();
+  const above = camera.position.y > grid.position.y;
+  if (grid.visible !== above) { grid.visible = above; dirty = true; }
+  if (moved || dirty) { renderer.render(scene, camera); dirty = false; }
+}
+requestAnimationFrame(frame);
+window.__viewer = { ready: true, parts: data.meshes.length, instances, camera, controls, goView };
+</script>
+</body>
+</html>

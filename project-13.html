@@ -19,6 +19,12 @@
         .kw-legal { border-left: 4px solid var(--gt-gold); background: var(--white); padding: 1.25rem 1.5rem; border-radius: 0.5rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06); }
         .kw-legal p { font-size: 1rem; }
         .kw-legal a { color: var(--gt-navy); font-weight: 600; }
+        .cad-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-bottom: 1.25rem; }
+        .cad-tab { font: inherit; font-weight: 600; font-size: 0.95rem; color: var(--gt-navy); background: var(--white); border: 2px solid var(--gt-navy); border-radius: 0.5rem; padding: 0.5rem 1rem; cursor: pointer; }
+        .cad-tab[aria-selected="true"] { background: var(--gt-navy); color: var(--white); }
+        .cad-tab:focus-visible { outline: 3px solid var(--gt-gold); outline-offset: 2px; }
+        .cad-poster { background-color: #dfe3e6; background-image: url("images/cad-tube-uas.jpg"); }
+        .cad-poster::after { background: linear-gradient(0deg, rgba(0, 20, 40, 0.35), rgba(0, 20, 40, 0)); }
     </style>
 </head>
 <body>
@@ -82,13 +88,13 @@
     </div>
 
     <div class="slide fade">
-        <img src="images/cad-tube-uas.jpg" alt="Zenith-6 tube-launched UAS study, exterior CAD render">
-        <div class="caption">Zenith-6 tube-launched UAS study</div>
+        <img src="images/cad-tube-uas.jpg" alt="LE-SR tube-launched UAS study, exterior CAD render">
+        <div class="caption">LE-SR tube-launched UAS study</div>
     </div>
 
     <div class="slide fade">
-        <img src="images/cad-cca.jpg" alt="Wrath collaborative combat aircraft study, clean configuration CAD render">
-        <div class="caption">Wrath CCA study, clean configuration</div>
+        <img src="images/cad-cca.jpg" alt="FQ-44A collaborative combat aircraft study, clean configuration CAD render">
+        <div class="caption">FQ-44A study, clean configuration</div>
     </div>
 
     <div class="slide fade">
@@ -102,7 +108,7 @@
     </div>
 
     <div class="slide fade">
-        <img src="images/anatomy-launch-deck.jpg" alt="Isometric anatomy figure of the Zenith-6 launch test deck">
+        <img src="images/anatomy-launch-deck.jpg" alt="Isometric anatomy figure of the LE-SR launch test deck">
         <div class="caption">Isometric anatomy: launch test deck</div>
     </div>
 
@@ -175,7 +181,7 @@ function autoSlide() {
         <div class="project-detail-content">
             <section class="project-section">
                 <h2>Overview</h2>
-                <p>Kill Web is a real-time command game that runs in the browser. The player finds every track, identifies it, then pairs the right shooter, because nothing fires until a track is identified. It has nine missions on the fictional Kestrel Coast and five pace levels that speed the enemy up faster than the player. The same project documents three CAD assemblies modeled in Python and inspected in a custom three.js viewer, and two interactive isometric anatomy figures. Every game value is fictional, and the CAD renders show exterior shape only.</p>
+                <p>Kill Web is a real-time command game that runs in the browser. The player finds every track, identifies it, then pairs the right shooter, because nothing fires until a track is identified. It has nine missions on the fictional Kestrel Coast and five pace levels that speed the enemy up faster than the player. The same project documents three CAD assemblies modeled in Python, which you can orbit below in an exterior-only 3D viewer, and two interactive isometric anatomy figures. Every game value is fictional, and the published CAD shows exterior shape only.</p>
             </section>
         </div>
 
@@ -204,24 +210,47 @@ function autoSlide() {
             <section class="project-section">
                 <h2>CAD Studies</h2>
                 <ul class="feature-list">
-                    <li>Zenith-6 tube-launched UAS, representative model of a publicly shown aircraft: 60 unique parts, 150 instances, checked in flight and stowed configurations.</li>
-                    <li>Wrath collaborative combat aircraft, representative model of a publicly shown aircraft: 125 unique parts, 130 instances.</li>
+                    <li>LE-SR tube-launched UAS, representative model of a publicly shown aircraft: 60 unique parts, 150 instances, checked in flight and stowed configurations.</li>
+                    <li>FQ-44A collaborative combat aircraft, representative model of a publicly shown aircraft: 125 unique parts, 130 instances.</li>
                     <li>Shade-X quiet ISR helicopter, original home-built design: 93 unique parts, 142 instances.</li>
                 </ul>
                 <p>Every part is a parametric B-rep solid in CadQuery 2.8 on Open CASCADE 7.9, numbered by subsystem. All three assemblies report 0 clashes and 0 floating parts; the two fixed-wing models were confirmed with a two-stage check that screens every instance pair as meshes at 0.05 mm deflection, then re-tests candidates with exact B-rep booleans. Each assembly ships as one self-contained HTML viewer with orbit, standard views, explode, a live section plane and coloring by material or subsystem.</p>
-                <p>Only exterior renders are published. Parts lists, masses, materials and internal layouts stay private, and the Wrath render omits its underwing stores.</p>
+                <p>Only exterior geometry is published. A visibility pass renders every part in a unique ID color from 162 directions and drops any part that never shows a pixel, so the public viewers keep 44 of 60 LE-SR parts, 95 of 125 FQ-44A parts (stores and pylons removed first) and all 93 Shade-X parts. Parts lists, masses, materials and internal layouts stay private.</p>
             </section>
 
+        </div>
+
+        <!-- Interactive CAD Section -->
+        <div class="video-preview-section">
+            <h2 class="video-preview-title">Interactive CAD</h2>
+            <div class="cad-tabs" role="tablist" aria-label="CAD model">
+                <button type="button" class="cad-tab" role="tab" data-m="le-sr" aria-selected="true">LE-SR</button>
+                <button type="button" class="cad-tab" role="tab" data-m="fq-44a" aria-selected="false">FQ-44A</button>
+                <button type="button" class="cad-tab" role="tab" data-m="shade-x" aria-selected="false">Shade-X</button>
+            </div>
+            <div class="video-container kw-stage" id="cadStage">
+                <button type="button" class="kw-poster cad-poster" id="cadLoad" aria-label="Load the interactive 3D model">
+                    <span>&#9654; Load 3D model</span>
+                </button>
+            </div>
+            <div class="kw-actions">
+                <a href="cad/?m=le-sr" class="project-detail-button" id="cadFull" target="_blank" rel="noopener">Open full size</a>
+                <span class="kw-addr" id="cadInfo">LE-SR · 44 parts · 1.1 MB</span>
+            </div>
+            <p class="kw-hint">Drag to orbit, right-drag to pan, scroll to zoom; Iso, Front, Side and Top snap the camera. Exterior geometry only: parts that cannot be seen from outside, parts lists, masses and materials are removed from the data itself, and the FQ-44A is shown without stores.</p>
+        </div>
+
+        <div class="project-detail-content">
             <section class="project-section">
                 <h2>Isometric Anatomy Figures</h2>
-                <p>Two interactive SVG figures, drawn in a fixed isometric projection with four-tone shading and back-to-front painter's ordering, show how the Shade-X helicopter field kit (150 moving part groups in 10 assemblies, with WebGL rotor effects) and the Zenith-6 launch test deck (151 part groups, 13 explode steps) come apart.</p>
+                <p>Two interactive SVG figures, drawn in a fixed isometric projection with four-tone shading and back-to-front painter's ordering, show how the Shade-X helicopter field kit (150 moving part groups in 10 assemblies, with WebGL rotor effects) and the LE-SR launch test deck (151 part groups, 13 explode steps) come apart.</p>
             </section>
 
             <section class="project-section">
                 <h2>Legal and Sourcing</h2>
                 <div class="kw-legal">
-                    <p>Kill Web and these studies are an unofficial, non-commercial fan project. They are not affiliated with, endorsed or sponsored by Anduril Industries, Inc. or any other company. Every unit, system and place name in the game, and the names of the CAD studies and figures, are fictional.</p>
-                    <p>No company logos, photographs, documents or data are used. Game terrain, art, unit models and sound are generated by code in this project; two of the CAD models are representative studies of publicly shown aircraft, approximated from public photographs and published overall dimensions; every performance value in the game is fictional, and hangar notes describe real-world classes of systems with links to public reporting. Third-party software: three.js (MIT License) and fonts under the SIL Open Font License. Built in AI-assisted development sessions with Claude (Anthropic). Questions or takedown requests: <a href="contact.html">contact</a>.</p>
+                    <p>Kill Web and these studies are an unofficial, non-commercial fan project. They are not affiliated with, endorsed or sponsored by Anduril Industries, Inc. or any other company. Units and studies carry fictional codenames or public government designations and program names (such as FQ-44A, AGM-189A and AST), never company product names; places, people and game values are fictional.</p>
+                    <p>No company logos, photographs, documents or data are used. Game terrain, art, unit models and sound are generated by code in this project; two of the CAD models are representative studies of publicly shown aircraft, approximated from public photographs and published overall dimensions, and the public 3D viewers carry exterior geometry only; every performance value in the game is fictional, and hangar notes describe real-world classes of systems with links to public reporting. Third-party software: three.js (MIT License) and fonts under the SIL Open Font License. Built in AI-assisted development sessions with Claude (Anthropic). Questions or takedown requests: <a href="contact.html">contact</a>.</p>
                 </div>
             </section>
         </div>
@@ -265,6 +294,36 @@ function autoSlide() {
             stage.appendChild(f);
             btn.remove();
             f.focus();
+        });
+    })();
+    // Interactive CAD: one viewer, three exterior-only models, loaded on request.
+    (function () {
+        var M = {
+            'le-sr': { img: 'images/cad-tube-uas.jpg', info: 'LE-SR · 44 parts · 1.1 MB' },
+            'fq-44a': { img: 'images/cad-cca.jpg', info: 'FQ-44A · 95 parts · 1.6 MB' },
+            'shade-x': { img: 'images/cad-helicopter.jpg', info: 'Shade-X · 93 parts · 4.2 MB' }
+        };
+        var cur = 'le-sr', frame = null;
+        var stage = document.getElementById('cadStage');
+        var load = document.getElementById('cadLoad');
+        var full = document.getElementById('cadFull');
+        var info = document.getElementById('cadInfo');
+        var tabs = document.querySelectorAll('.cad-tab');
+        function show(k) {
+            cur = k;
+            tabs.forEach(function (t) { t.setAttribute('aria-selected', String(t.getAttribute('data-m') === k)); });
+            full.href = 'cad/?m=' + k;
+            info.textContent = M[k].info;
+            if (frame) frame.src = 'cad/?m=' + k + '&embed=1';
+            else load.style.backgroundImage = 'url(' + M[k].img + ')';
+        }
+        tabs.forEach(function (t) { t.addEventListener('click', function () { show(t.getAttribute('data-m')); }); });
+        load.addEventListener('click', function () {
+            frame = document.createElement('iframe');
+            frame.src = 'cad/?m=' + cur + '&embed=1';
+            frame.title = 'Interactive CAD viewer';
+            stage.appendChild(frame);
+            load.remove();
         });
     })();
     // Full size opens killweb.parth-patel.me once that address answers; until then it opens /killweb/.
