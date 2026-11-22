@@ -46,7 +46,7 @@
 
 <div class="slideshow-container">
     <div class="slide fade">
-        <img src="images/ic2.png" alt="System Design>
+        <img src="images/ic2.png" alt="System Design">
     </div>
 
     <div class="slide fade">
@@ -61,67 +61,18 @@
         <img src="images/ic5.png" alt="System Characterization">
     </div>
 
-    <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
-    <a class="next" onclick="changeSlide(1)">&#10095;</a>
+    <a class="prev" role="button" tabindex="0" aria-label="Previous image">&#10094;</a>
+    <a class="next" role="button" tabindex="0" aria-label="Next image">&#10095;</a>
 </div>
 
 <div class="dots-container">
-    <span class="dot" onclick="currentSlide(1)"></span>
-    <span class="dot" onclick="currentSlide(2)"></span>
-    <span class="dot" onclick="currentSlide(3)"></span>
-    <span class="dot" onclick="currentSlide(4)"></span>
+    <span class="dot" role="button" tabindex="0" aria-label="Show image 1"></span>
+    <span class="dot" role="button" tabindex="0" aria-label="Show image 2"></span>
+    <span class="dot" role="button" tabindex="0" aria-label="Show image 3"></span>
+    <span class="dot" role="button" tabindex="0" aria-label="Show image 4"></span>
 
 </div>
 
-        <!-- Slideshow JavaScript -->
-<script>
-let slideIndex = 1;
-let slideTimer;
-
-document.addEventListener('DOMContentLoaded', function() {
-    showSlide(slideIndex);
-    autoSlide();
-});
-
-function changeSlide(n) {
-    clearTimeout(slideTimer);
-    showSlide(slideIndex += n);
-    autoSlide();
-}
-
-function currentSlide(n) {
-    clearTimeout(slideTimer);
-    showSlide(slideIndex = n);
-    autoSlide();
-}
-
-function showSlide(n) {
-    const slides = document.getElementsByClassName('slide');
-    const dots = document.getElementsByClassName('dot');
-
-    if (n > slides.length) slideIndex = 1;
-    if (n < 1) slideIndex = slides.length;
-
-    for (let i = 0; i < slides.length; i++) {
-        slides[i].style.display = 'none';
-    }
-
-    for (let i = 0; i < dots.length; i++) {
-        dots[i].className = dots[i].className.replace(' active', '');
-    }
-
-    slides[slideIndex - 1].style.display = 'block';
-    dots[slideIndex - 1].className += ' active';
-}
-
-function autoSlide() {
-    slideTimer = setTimeout(function() {
-        slideIndex++;
-        showSlide(slideIndex);
-        autoSlide();
-    }, 5000);
-}
-</script>
  <!-- Project Content -->
         <div class="project-detail-content">
             <section class="project-section">
@@ -165,66 +116,48 @@ function autoSlide() {
         <img src="images/ref4.png" alt="System View">
     </div>
 
-    <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
-    <a class="next" onclick="changeSlide(1)">&#10095;</a>
+    <a class="prev" role="button" tabindex="0" aria-label="Previous image">&#10094;</a>
+    <a class="next" role="button" tabindex="0" aria-label="Next image">&#10095;</a>
 </div>
 
 <div class="dots-container">
-    <span class="dot" onclick="currentSlide(1)"></span>
-    <span class="dot" onclick="currentSlide(2)"></span>
-    <span class="dot" onclick="currentSlide(3)"></span>
-    <span class="dot" onclick="currentSlide(4)"></span>
+    <span class="dot" role="button" tabindex="0" aria-label="Show image 1"></span>
+    <span class="dot" role="button" tabindex="0" aria-label="Show image 2"></span>
+    <span class="dot" role="button" tabindex="0" aria-label="Show image 3"></span>
+    <span class="dot" role="button" tabindex="0" aria-label="Show image 4"></span>
 
 </div>
 
-        <!-- Slideshow JavaScript -->
+        <!-- Slideshow JavaScript: each gallery runs on its own slides, dots and timer -->
 <script>
-let slideIndex = 1;
-let slideTimer;
-
-document.addEventListener('DOMContentLoaded', function() {
-    showSlide(slideIndex);
-    autoSlide();
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.slideshow-container').forEach(function (gallery) {
+        var slides = gallery.querySelectorAll('.slide');
+        var after = gallery.nextElementSibling;
+        var dots = after && after.classList.contains('dots-container') ? after.querySelectorAll('.dot') : [];
+        var index = 0, timer = null;
+        if (!slides.length) return;
+        function show(n) {
+            index = (n + slides.length) % slides.length;
+            slides.forEach(function (slide, i) { slide.style.display = i === index ? 'block' : 'none'; });
+            dots.forEach(function (dot, i) { dot.classList.toggle('active', i === index); });
+        }
+        function restart() {
+            clearTimeout(timer);
+            timer = setTimeout(function () { show(index + 1); restart(); }, 5000);
+        }
+        function go(n) { show(n); restart(); }
+        function onPress(el, fn) {
+            el.addEventListener('click', fn);
+            el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } });
+        }
+        onPress(gallery.querySelector('.prev'), function () { go(index - 1); });
+        onPress(gallery.querySelector('.next'), function () { go(index + 1); });
+        dots.forEach(function (dot, i) { onPress(dot, function () { go(i); }); });
+        show(0);
+        restart();
+    });
 });
-
-function changeSlide(n) {
-    clearTimeout(slideTimer);
-    showSlide(slideIndex += n);
-    autoSlide();
-}
-
-function currentSlide(n) {
-    clearTimeout(slideTimer);
-    showSlide(slideIndex = n);
-    autoSlide();
-}
-
-function showSlide(n) {
-    const slides = document.getElementsByClassName('slide');
-    const dots = document.getElementsByClassName('dot');
-
-    if (n > slides.length) slideIndex = 1;
-    if (n < 1) slideIndex = slides.length;
-
-    for (let i = 0; i < slides.length; i++) {
-        slides[i].style.display = 'none';
-    }
-
-    for (let i = 0; i < dots.length; i++) {
-        dots[i].className = dots[i].className.replace(' active', '');
-    }
-
-    slides[slideIndex - 1].style.display = 'block';
-    dots[slideIndex - 1].className += ' active';
-}
-
-function autoSlide() {
-    slideTimer = setTimeout(function() {
-        slideIndex++;
-        showSlide(slideIndex);
-        autoSlide();
-    }, 5000);
-}
 </script>
  <!-- Project Content -->
         <div class="project-detail-content">
